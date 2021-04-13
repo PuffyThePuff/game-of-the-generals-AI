@@ -3,9 +3,6 @@
 
 void piece::setSprite(char rank, char team) {
 	sf::Texture texture;
-
-	//don't remembet how to load dynamic file names but below should look like assets/<team>/<rank>.jpg
-	//texture.loadFromFile(test.jpg);
 	
 	sprite.setTexture(texture);
 }
