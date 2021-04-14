@@ -18,7 +18,9 @@ void TextureManager::loadAll() {
 		loadTexture(str_i, "assets/pieces/white/" + str_i + ".png");
 	}
 	loadTexture("hidden", "assets/pieces/hidden.png");
-	// loadTexture("quit", "assets/quitmenu.png");
+	loadTexture("quit", "assets/quitmenu.png");
+	loadTexture("win", "assets/winScreen.png");
+	loadTexture("loss", "assets/loseScreen.png");
 }
 
 void TextureManager::loadTexture(std::string key, std::string path) {
@@ -35,8 +37,4 @@ sf::Texture* TextureManager::getTexture(std::string key) {
 		std::cout << "No texture found for " << key;
 		return NULL;
 	}
-}
-
-void TextureManager::testFunction() {
-	std::cout << "Hi, I'm single-ton ;D";
 }

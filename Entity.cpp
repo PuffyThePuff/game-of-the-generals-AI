@@ -8,7 +8,6 @@ void Entity::setTexture(sf::Texture texture) {
 }
 
 void Entity::sendToGraveyard(int* blackOffset, int* whiteOffset) {
-	getSprite()->setScale(0.5, 0.5);
 	boardPos = sf::Vector2i(-1, -1);
 	if (rank == 'b') {
 		getSprite()->setPosition(*blackOffset * 90, 7 * 60);
@@ -18,6 +17,7 @@ void Entity::sendToGraveyard(int* blackOffset, int* whiteOffset) {
 		getSprite()->setPosition(*whiteOffset * 90, 8 * 60);
 		*whiteOffset += 1;
 	}
+	getSprite()->setScale(0.75, 0.75);
 }
 
 /*
