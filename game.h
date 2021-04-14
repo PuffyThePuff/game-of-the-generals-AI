@@ -10,8 +10,9 @@ private:
     void processEvents();
     void update();
     void render();
-    void createEntity(std::string, float, float);
+    void createEntity(std::string, float, float, int, char);
 private:
     sf::RenderWindow mWindow;
     std::vector<Entity*> entityList;
+    Entity* boardState[9][8];
 };
