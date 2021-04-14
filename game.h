@@ -11,8 +11,22 @@ private:
     void update();
     void render();
     void createEntity(std::string, float, float, int, char);
+    void collisionCheck(Entity*);
+    void handleCollision(Entity*, Entity*);
+    void handlePlayerInput(sf::Keyboard::Key);
 private:
     sf::RenderWindow mWindow;
     std::vector<Entity*> entityList;
-    Entity* boardState[9][8];
+    std::vector<sf::RectangleShape*> grid;
+    // sf::Sprite quitBox;
+    Entity* selectedPiece;
+
+    int placeIndex = 20;
+    int whiteDead = 0;
+    int blackDead = 0;
+
+    bool startPhase = true;
+    bool isPlayerTurn = true;
+    bool selectedMode = false;
+    bool quitMenu = false;
 };

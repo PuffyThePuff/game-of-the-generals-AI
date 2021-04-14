@@ -18,6 +18,7 @@ void TextureManager::loadAll() {
 		loadTexture(str_i, "assets/pieces/white/" + str_i + ".png");
 	}
 	loadTexture("hidden", "assets/pieces/hidden.png");
+	// loadTexture("quit", "assets/quitmenu.png");
 }
 
 void TextureManager::loadTexture(std::string key, std::string path) {
