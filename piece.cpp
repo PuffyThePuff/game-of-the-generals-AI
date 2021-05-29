@@ -16,7 +16,8 @@ Piece::~Piece() {
 }
 
 void Piece::place(int row, int col) {
-	boardPosition = sf::Vector2i(row, col);
+	currentRow = row;
+	currentCol = col;
 	sprite->setPosition(Game::TILE_SIZE * (col + 1), Game::TILE_SIZE * row);
 }
 

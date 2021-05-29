@@ -20,7 +20,8 @@ public:
 	void deselect();
 
 	sf::Sprite* sprite;
-	sf::Vector2i boardPosition;
+	int currentRow;
+	int currentCol;
 	int rank;
 	bool team;
 

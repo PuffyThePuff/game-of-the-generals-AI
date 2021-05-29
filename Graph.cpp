@@ -1,8 +1,8 @@
 #include "Graph.h"
 
-void Graph::add(State* V, State* neighbor, Move action) {
+void Graph::add(State* V, State* neighbor, Move* action) {
 	if (adjList[V] == NULL) adjList[V] = new ChildList();
-	pair<Move, State*> toInsert(action, neighbor);
+	pair<Move*, State*> toInsert(action, neighbor);
 	adjList[V]->insert(toInsert);
 }
 

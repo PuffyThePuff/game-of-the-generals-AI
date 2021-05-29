@@ -6,5 +6,5 @@ class Space
 public:
 	Space() {}
 	bool isOccupied = false;
-	Piece* piece;
+	Piece* piece = NULL;
 };
