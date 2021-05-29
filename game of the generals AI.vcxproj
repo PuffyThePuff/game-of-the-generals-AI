@@ -144,7 +144,9 @@
   <ItemGroup>
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="Graph.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Move.cpp" />
     <ClCompile Include="Piece.cpp" />
     <ClCompile Include="Space.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -152,8 +154,11 @@
   <ItemGroup>
     <ClInclude Include="Entity.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="Graph.h" />
+    <ClInclude Include="Move.h" />
     <ClInclude Include="Piece.h" />
     <ClInclude Include="Space.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

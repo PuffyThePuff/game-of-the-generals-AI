@@ -7,6 +7,13 @@ using namespace std;
 
 class Piece {
 public:
+	enum MoveType {
+		Up = 0,
+		Right = 1,
+		Down = 2,
+		Left = 3
+	};
+
 	Piece(int newRank, bool isWhite);
 	~Piece();
 	void place(int row, int col);

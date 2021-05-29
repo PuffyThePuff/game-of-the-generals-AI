@@ -5,6 +5,7 @@ Game::Game() :
     mWindow(sf::VideoMode(600, 540), "Salpakan") {
     mWindow.setFramerateLimit(5);
     TextureManager::getInstance()->loadAll();
+
     for (int i = 0; i <= 14; i++) {
         Piece* piece = new Piece(i, false);
         blackPieces.push_back(piece);

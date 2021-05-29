@@ -33,6 +33,12 @@
     <ClCompile Include="Space.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Move.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextureManager.h">
@@ -48,6 +54,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Space.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Move.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
