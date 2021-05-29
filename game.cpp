@@ -1,34 +1,38 @@
 #include "game.h"
-#include "TextureManager.h"
 #include <SFML/Graphics.hpp>
 
 Game::Game() :
-    mWindow(sf::VideoMode(900, 600), "Salpakan") {
+    mWindow(sf::VideoMode(600, 540), "Salpakan") {
     mWindow.setFramerateLimit(5);
     TextureManager::getInstance()->loadAll();
     for (int i = 0; i <= 14; i++) {
-        createEntity("hidden", 0, 0, i, 'b');
+        Piece* piece = new Piece(i, false);
+        blackPieces.push_back(piece);
     }
 
     //add 5 privates
     for (int i = 0; i < 5; i++) {
-        createEntity("hidden", 0, 0, 1, 'b');
+        Piece* piece = new Piece(1, false);
+        blackPieces.push_back(piece);
     }
 
     //extra spy
-    createEntity("hidden", 0, 0, 14, 'b');
+    Piece* piece1 = new Piece(14, false);
+    blackPieces.push_back(piece1);
 
     //load white pieces last
     for (int i = 0; i <= 14; i++) {
-        std::string str_i = std::to_string(i);
-        createEntity(str_i, 0, 8, i, 'w');
+        Piece* piece = new Piece(i, false);
+        whitePieces.push_back(piece);
     }
 
     for (int i = 0; i < 5; i++) {
-        createEntity("1", 0, 8, 1, 'w');
+        Piece* piece = new Piece(1, false);
+        whitePieces.push_back(piece);
     }
 
-    createEntity("14", 0, 8, 14, 'w');
+    Piece* piece2 = new Piece(14, false);
+    whitePieces.push_back(piece2);
 
     setBlack();
 
@@ -52,18 +56,6 @@ Game::Game() :
     sf::Texture* mTexture = TextureManager::getInstance()->getTexture("quit");
     quitBox.setTexture(*mTexture);
 };
-
-void Game::createEntity(std::string key, float x, float y, int rank, char team) {
-    Entity* entity = new Entity();
-    sf::Texture* mTexture;
-    mTexture = TextureManager::getInstance()->getTexture(key);
-    entity->setTexture(*mTexture);
-    entity->getSprite()->setPosition(x * 90, y * 60);
-    entity->boardPos = sf::Vector2i(x, y);
-    entity->rank = rank;
-    entity->team = team;
-    entityList.push_back(entity);
-}
 
 void Game::run() {
     while (mWindow.isOpen()) {

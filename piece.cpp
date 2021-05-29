@@ -5,11 +5,18 @@ Piece::Piece(int newRank, bool isWhite) {
 	rank = newRank;
 	team = isWhite;
 
-
+	sf::Texture* texture;
+	if (!isWhite) texture = TextureManager::getInstance()->getTexture("hidden");
+	else texture = TextureManager::getInstance()->getTexture(to_string(rank));
 }
 
 Piece::~Piece() {
 
+}
+
+void Piece::place(int row, int col) {
+	boardPosition = sf::Vector2i(row, col);
+	sprite->setPosition(game::TILE_SIZE * (col + 1), game::TILE_SIZE * row);
 }
 
 void Piece::move() {

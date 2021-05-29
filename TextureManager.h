@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>;
 #include <unordered_map>
+#pragma once
 
 class TextureManager
 {

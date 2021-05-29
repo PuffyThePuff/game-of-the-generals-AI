@@ -9,6 +9,8 @@ class Game {
 public:
     Game();
     void run();
+
+    static const int TILE_SIZE = 60;
 private:
     void processEvents();
     void update();
