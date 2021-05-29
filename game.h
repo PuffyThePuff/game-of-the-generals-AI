@@ -1,6 +1,9 @@
 #include "Entity.h"
+#include "Piece.h"
+#include"Space.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
+using namespace std;
 
 class Game {
 public:
@@ -24,6 +27,12 @@ private:
     sf::Sprite quitBox;
     sf::Sprite resultScreen;
     Entity* selectedPiece;
+
+    Space board[8][9];
+    vector<Piece*> whitePieces;
+    vector<Piece*> blackPieces;
+    vector<Piece*> whiteGraveyard;
+    vector<Piece*> blackGraveyard;
 
     int placeIndex = 41;
     int whiteDead = 0;

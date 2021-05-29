@@ -1,32 +1,27 @@
-#include <SFML/Graphics.hpp>
-#include "piece.h"
+#include "Piece.h"
 
-void piece::setSprite(char rank, char team) {
-	sf::Texture texture;
-	
-	sprite.setTexture(texture);
-}
+Piece::Piece(int newRank, bool isWhite) {
+	sprite = new sf::Sprite();
+	rank = newRank;
+	team = isWhite;
 
-piece::piece(sf::Vector2f newposition, char newrank, char newteam) {
-	piece::setSprite(newrank, newteam);
-	position = newposition;
-	rank = newrank;
-	team = newteam;
-	seen = false;
-}
-
-piece::~piece() {
 
 }
 
-void piece::move() {
+Piece::~Piece() {
 
 }
 
-void piece::eat() {
+void Piece::move() {
 
 }
 
-bool piece::isSeen() {
-	return seen;
+void Piece::select() {
+	isSelected = true;
+	sprite->setColor(sf::Color::Red);
+}
+
+void Piece::deselect() {
+	isSelected = false;
+	sprite->setColor(sf::Color::Transparent);
 }

@@ -1,19 +1,20 @@
+#include <SFML/Graphics.hpp>
+#include"TextureManager.h"
 #pragma once
 
-class piece {
-private:
-	sf::Sprite sprite;
-	sf::Vector2f size;
-	sf::Vector2f position;
-	bool seen;
-	char rank;
-	char team;
-	void setSprite(char rank, char team);
-
+class Piece {
 public:
-	piece(sf::Vector2f newposition, char newrank, char newteam);
-	~piece();
+	Piece(int newRank, bool isWhite);
+	~Piece();
 	void move();
-	void eat();
-	bool isSeen();
+	void select();
+	void deselect();
+
+	sf::Sprite* sprite;
+	sf::Vector2i boardPosition;
+	int rank;
+	bool team;
+
+	bool isAlive = true;
+	bool isSelected = false;
 };
