@@ -6,5 +6,5 @@ class Move
 public:
 	Move() {}
 	unsigned int pieceIndex;
-	MoveType moveType;
+	Piece::MoveType moveType;
 };

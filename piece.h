@@ -1,9 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include<string>
 #include"TextureManager.h"
-#include"game.h"
 #pragma once
-using namespace std;
 
 class Piece {
 public:

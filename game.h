@@ -3,6 +3,7 @@
 #include"Space.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
+#pragma once
 using namespace std;
 
 class Game {
