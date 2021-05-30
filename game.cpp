@@ -171,7 +171,7 @@ void Game::processEvents(sf::Time deltaTime) {
     if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
         if(startPhase){
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-            if(mousePos.y >= (5 * TILE_SIZE) && mousePos.y < 480 && mousePos.x >= 0 && mousePos.x < 660){
+            if(mousePos.y >= (5 * TILE_SIZE) && mousePos.y < 480 && mousePos.x >= 60 && mousePos.x < 660){
                 int row = mousePos.y / TILE_SIZE;
                 int col = (mousePos.x / TILE_SIZE) - 1;
                 if (board[row][col].isOccupied == false) {
