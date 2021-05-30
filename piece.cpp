@@ -21,10 +21,6 @@ void Piece::place(int row, int col) {
 	sprite->setPosition(Game::TILE_SIZE * (col + 1), Game::TILE_SIZE * row);
 }
 
-void Piece::move() {
-
-}
-
 void Piece::select() {
 	isSelected = true;
 	sprite->setColor(sf::Color::Red);

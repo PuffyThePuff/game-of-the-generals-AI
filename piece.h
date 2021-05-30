@@ -15,7 +15,6 @@ public:
 	Piece(int newRank, bool isWhite);
 	~Piece();
 	void place(int row, int col);
-	void move();
 	void select();
 	void deselect();
 

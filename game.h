@@ -21,6 +21,10 @@ private:
     void handleCollision(Entity*, Entity*);
     void handlePlayerInput(sf::Keyboard::Key);
     void setBlack();
+
+    void movePiece(Piece* piece, Piece::MoveType moveType);
+    Piece* determineWinner(Piece*, Piece*);
+    void sendToGraveyard(Piece*);
     void blackMove();
     void checkFlags();
 private:

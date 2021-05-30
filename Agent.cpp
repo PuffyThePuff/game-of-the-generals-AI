@@ -47,7 +47,15 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList, bool isWhite)
 			next->boardState[row][col].piece = NULL;
 
 			switch (possibleMoves[j]->moveType) {
-				// (to set up tomorrow; add a check validity function)
+			case Piece::Up:
+				if (next->boardState[row - 1][col].isOccupied) {
+					next->boardState[row][col].isOccupied = true;
+					next->boardState[row][col].piece = toMove;
+				}
+				else {
+					next->boardState[row - 1][col].isOccupied = true;
+					next->boardState[row - 1][col].piece = toMove;
+				}
 			}
 
 			G->add(current, next, possibleMoves[j]);
