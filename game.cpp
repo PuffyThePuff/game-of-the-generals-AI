@@ -2,38 +2,62 @@
 #include <SFML/Graphics.hpp>
 
 Game::Game() :
-    mWindow(sf::VideoMode(600, 540), "Salpakan") {
-    mWindow.setFramerateLimit(5);
+    mWindow(sf::VideoMode(660, 480), "Salpakan") {
+    mWindow.setFramerateLimit(60);
     TextureManager::getInstance()->loadAll();
 
-    for (int i = 0; i <= 14; i++) {
-        Piece* piece = new Piece(i, false);
-        blackPieces.push_back(piece);
-    }
+    // BLACK PIECES
 
-    //add 5 privates
-    for (int i = 0; i < 5; i++) {
+    // Flag
+    Piece* piece0 = new Piece(0, false);
+    blackPieces.push_back(piece0);
+
+    // Six privates
+    for (int i = 0; i < 6; i++) {
         Piece* piece = new Piece(1, false);
         blackPieces.push_back(piece);
     }
 
-    //extra spy
+    // All other pieces
+    for (int i = 2; i <= 14; i++) {
+        Piece* piece = new Piece(i, false);
+        blackPieces.push_back(piece);
+    }
+
+    // Extra spy
     Piece* piece1 = new Piece(14, false);
     blackPieces.push_back(piece1);
 
-    //load white pieces last
-    for (int i = 0; i <= 14; i++) {
-        Piece* piece = new Piece(i, false);
-        whitePieces.push_back(piece);
-    }
+    // WHITE PIECES
 
-    for (int i = 0; i < 5; i++) {
-        Piece* piece = new Piece(1, false);
-        whitePieces.push_back(piece);
-    }
-
-    Piece* piece2 = new Piece(14, false);
+    Piece* piece2 = new Piece(0, true);
     whitePieces.push_back(piece2);
+    // Prepare for piece placement.
+    whiteGraveyard.push_back(piece2);
+    piece2->sprite->setPosition(9 * TILE_SIZE, 210);
+    selectedIndex = 0;
+    piece2->select();
+
+    for (int i = 0; i < 6; i++) {
+        Piece* piece = new Piece(1, true);
+        whitePieces.push_back(piece);
+        whiteGraveyard.push_back(piece);
+        piece->sprite->setPosition(660, 480);
+    }
+
+    for (int i = 2; i <= 14; i++) {
+        Piece* piece = new Piece(i, true);
+        whitePieces.push_back(piece);
+        whiteGraveyard.push_back(piece);
+        piece->sprite->setPosition(660, 480);
+    }
+
+    Piece* piece3 = new Piece(14, true);
+    whitePieces.push_back(piece3);
+    whiteGraveyard.push_back(piece3);
+    piece3->sprite->setPosition(10 * TILE_SIZE, 110);
+    
+    whitePieces[1]->sprite->setPosition(10 * TILE_SIZE, 310);
 
     setBlack();
 
@@ -59,14 +83,21 @@ Game::Game() :
 };
 
 void Game::run() {
+    sf::Clock clock;
+    sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while (mWindow.isOpen()) {
-        processEvents();
-        update();
+        processEvents(TimePerFrame);
+        timeSinceLastUpdate += clock.restart();
+        while (timeSinceLastUpdate > TimePerFrame) {
+            timeSinceLastUpdate -= TimePerFrame;
+            processEvents(TimePerFrame);
+            update(TimePerFrame);
+        }
         render();
     }
 }
 
-void Game::processEvents() {
+void Game::processEvents(sf::Time deltaTime) {
     sf::Event event;
     while (mWindow.pollEvent(event)) {
         switch (event.type) {
@@ -82,10 +113,12 @@ void Game::processEvents() {
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        if(startPhase){
+        ticks += deltaTime.asSeconds();
+        if(startPhase && ticks > 0.03f){
+            ticks = 0.0;
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-            if(mousePos.y < 480 && mousePos.x < 810){
-                sf::Vector2i indices = sf::Vector2i(mousePos.x / 90, mousePos.y / 60);
+            if(mousePos.y >= 0 && mousePos.y < 480 && mousePos.x >= 0 && mousePos.x < 660){
+                sf::Vector2i indices = sf::Vector2i(mousePos.x / TILE_SIZE, mousePos.y / TILE_SIZE);
                 entityList[placeIndex]->boardPos = indices;
                 entityList[placeIndex]->getSprite()->setPosition(
                     entityList[placeIndex]->boardPos.x * 90,
@@ -94,12 +127,12 @@ void Game::processEvents() {
                 placeIndex--;
             }
 
-            if (placeIndex < 21) startPhase = false;
+            if (whiteGraveyard.empty()) startPhase = false;
         }
 
         else{
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-            if(mousePos.y < 480 && mousePos.x < 810 && isPlayerTurn){
+            if(mousePos.y < 480 && mousePos.x < 660 && isPlayerTurn){
                 sf::Vector2i indices = sf::Vector2i(mousePos.x / 90, mousePos.y / 60);
                 for(int i = 0; i < entityList.size(); i++){
                     if(entityList[i]->boardPos==indices && entityList[i]->team=='w'){
@@ -114,7 +147,34 @@ void Game::processEvents() {
 }
 
 void Game::handlePlayerInput(sf::Keyboard::Key key) {
-    if(isPlayerTurn && selectedMode){
+    if (startPhase) {
+        if (key == sf::Keyboard::A) {
+            whiteGraveyard[selectedIndex]->deselect();
+            whiteGraveyard[selectedIndex]->sprite->move(0, -100);
+            whiteGraveyard[selectedIndex - 1]->sprite->setPosition(660, 480);
+
+            if (selectedIndex == whiteGraveyard.size() - 1) selectedIndex = 0;
+            else selectedIndex++;
+
+            whiteGraveyard[selectedIndex]->select();
+            whiteGraveyard[selectedIndex]->sprite->move(0, -100);
+            whiteGraveyard[selectedIndex + 1]->sprite->setPosition(9 * TILE_SIZE, 310);
+        }
+        if (key == sf::Keyboard::D) {
+            whiteGraveyard[selectedIndex]->deselect();
+            whiteGraveyard[selectedIndex]->sprite->move(0, 100);
+            whiteGraveyard[selectedIndex + 1]->sprite->setPosition(660, 480);
+
+            if (selectedIndex == 0) selectedIndex = whiteGraveyard.size() - 1;
+            else selectedIndex--;
+
+            whiteGraveyard[selectedIndex]->select();
+            whiteGraveyard[selectedIndex]->sprite->move(0, 100);
+            whiteGraveyard[selectedIndex - 1]->sprite->setPosition(9 * TILE_SIZE, 110);
+        }
+    }
+
+    else if(isPlayerTurn && selectedMode){
         if (key == sf::Keyboard::W && selectedPiece->boardPos.y > 0) {
             collisionCheck(selectedPiece, sf::Vector2i(selectedPiece->boardPos.x, selectedPiece->boardPos.y - 1));
             selectedPiece->getSprite()->move(0, -1 * 60);
@@ -348,11 +408,11 @@ void Game::sendToGraveyard(Piece* piece) {
     piece->isAlive = false;
 
     if (piece->team) {
-        piece->sprite->setPosition(25 * whiteGraveyard.size(), 9 * TILE_SIZE);
+        piece->sprite->setPosition(8 * TILE_SIZE, 25 * whiteGraveyard.size());
         whiteGraveyard.push_back(piece);
     }
     else {
-        piece->sprite->setPosition(25 * blackGraveyard.size(), 0);
+        piece->sprite->setPosition(0, 25 * blackGraveyard.size());
         blackGraveyard.push_back(piece);
     }
 }
@@ -378,7 +438,7 @@ void Game::blackMove(){
     }
 }
 
-void Game::update() {
+void Game::update(sf::Time deltaTime) {
     //check flag conditions here for game win or lose
 }
 

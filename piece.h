@@ -24,6 +24,5 @@ public:
 	int rank;
 	bool team;
 
-	bool isAlive = true;
-	bool isSelected = false;
+	bool isAlive = false;
 };

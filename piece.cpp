@@ -22,11 +22,9 @@ void Piece::place(int row, int col) {
 }
 
 void Piece::select() {
-	isSelected = true;
-	sprite->setColor(sf::Color::Red);
+	sprite->setColor(sf::Color::Green);
 }
 
 void Piece::deselect() {
-	isSelected = false;
 	sprite->setColor(sf::Color::Transparent);
 }
