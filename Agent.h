@@ -16,9 +16,13 @@ public:
 private:
 	Graph* G;
 	vector<Move*> possibleMoves;
+	const float POINTS_PER_PIECE = 10.f;
+	const float FLAG_PENALTY = -10000.f;
 
 	void generateNext(State*, vector<Piece*>);
-	float getScore(State* V);
+	float getScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces);
+	float getOffensiveScore(Move* move, State* state, vector<Piece*> ownPieces);
+	float getDefensiveScore(vector<Piece*> ownPieces, vector<Piece*> enemyPieces);
 	float getWinProbability(int rank);
 	float getElimProbability(int rank);
 };

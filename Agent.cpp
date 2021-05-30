@@ -122,9 +122,94 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 	}
 }
 
-float Agent::getScore(State* V) {
+float Agent::getScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces) {
 	float score = 0.f;
 	
+	return score;
+}
+
+float Agent::getOffensiveScore(Move* move, State* state, vector<Piece*> ownPieces) {
+	float score = 0.f;
+	
+	for (int i = 0; i < ownPieces.size(); i++) {
+		if (ownPieces[i]->isAlive && i != move->pieceIndex) {
+			score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
+
+			int row = ownPieces[i]->currentRow;
+			int col = ownPieces[i]->currentCol;
+
+			// Check adjacent spaces for enemies.
+			if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece != NULL) {
+				// Check if space above.
+				if (
+					state->boardState[row - 1][col].isOccupied &&
+					(state->boardState[row - 1][col].piece->team != ownPieces[i]->team)
+					) {
+					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
+				}
+
+				// Check space below.
+				if (
+					state->boardState[row + 1][col].isOccupied &&
+					(state->boardState[row + 1][col].piece->team != ownPieces[i]->team)
+					) {
+					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
+				}
+
+				// Check space to the left.
+				if (
+					state->boardState[row][col - 1].isOccupied &&
+					(state->boardState[row][col - 1].piece->team != ownPieces[i]->team)
+					) {
+					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
+				}
+
+				// Check space to the right.
+				if (
+					state->boardState[row][col + 1].isOccupied &&
+					(state->boardState[row][col + 1].piece->team != ownPieces[i]->team)
+					) {
+					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
+				}
+			}
+		}
+	}
+
+	Piece* last = ownPieces[move->pieceIndex];
+	int row = last->currentRow;
+	int col = last->currentCol;
+	switch (move->moveType) {
+	case Piece::Up:
+		row -= 1;
+		break;
+	case Piece::Right:
+		col += 1;
+		break;
+	case Piece::Down:
+		row += 1;
+		break;
+	case Piece::Left:
+		col -= 1;
+		break;
+	}
+
+	if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece == NULL) {
+		if (
+			state->boardState[row][col].challengers[0] != NULL &&
+			state->boardState[row][col].challengers[1] != NULL
+			) {
+			score += (POINTS_PER_PIECE * getWinProbability(last->rank));
+		}
+	}
+
+	return score;
+}
+
+float Agent::getDefensiveScore(vector<Piece*> ownPieces, vector<Piece*> enemyPieces) {
+	float score = 0.f;
+	for (int i = 0; i < ownPieces.size(); i++) {
+		score += getWinProbability(ownPieces[i]->rank);
+	}
 	return score;
 }
 
@@ -155,7 +240,7 @@ Move* Agent::getNextMove(State* current, vector<Piece*> whitePieces, vector<Piec
 	for (unsigned int i = 0; i < possibleMoves.size(); i++) {
 		State* check = list->at(possibleMoves[i]);
 		if (check != NULL) {
-			float score = getScore(check);
+			float score = getScore(possibleMoves[i], check, blackPieces, whitePieces);
 			if (score < bestScore) {
 				bestScore = score;
 				move = possibleMoves[i];
