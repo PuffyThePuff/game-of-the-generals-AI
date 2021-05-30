@@ -122,22 +122,40 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 	}
 }
 
-int Agent::getScore(State* V) {
-	int score = 0;
-
+float Agent::getScore(State* V) {
+	float score = 0.f;
+	
 	return score;
+}
+
+float Agent::getWinProbability(int rank) {
+	switch (rank) {
+	case 0: return 1.f / 21.f;
+	case 1: return 9.f / 21.f;
+	case 14: return 15.f / 21.f;
+	default: return float(6.f + rank) / 21.f;
+	}
+}
+
+float Agent::getElimProbability(int rank) {
+	switch (rank) {
+	case 0: return 1.f;
+	case 1: return 18.f / 21.f;
+	case 14: return 8.f / 21.f;
+	default: return float(16.f - rank) / 21.f;
+	}
 }
 
 Move* Agent::getNextMove(State* current, vector<Piece*> whitePieces, vector<Piece*> blackPieces) {
 	generateNext(current, blackPieces);
 	ChildList* list = G->getConnections(current);
 	Move* move = NULL;
-	int bestScore = INFINITY;
+	float bestScore = INFINITY;
 
 	for (unsigned int i = 0; i < possibleMoves.size(); i++) {
 		State* check = list->at(possibleMoves[i]);
 		if (check != NULL) {
-			int score = getScore(check);
+			float score = getScore(check);
 			if (score < bestScore) {
 				bestScore = score;
 				move = possibleMoves[i];

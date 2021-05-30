@@ -18,5 +18,7 @@ private:
 	vector<Move*> possibleMoves;
 
 	void generateNext(State*, vector<Piece*>);
-	int getScore(State* V);
+	float getScore(State* V);
+	float getWinProbability(int rank);
+	float getElimProbability(int rank);
 };
