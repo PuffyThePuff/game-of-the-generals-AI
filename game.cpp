@@ -198,6 +198,7 @@ void Game::processEvents(sf::Time deltaTime) {
                         ), whiteGraveyard.end()
                     );
                     whiteGraveyard.shrink_to_fit();
+                    selectedIndex--;
                 }
 
                 else {
@@ -236,7 +237,10 @@ void Game::handlePiecePlacement(int row, int col) {
 
     whiteGraveyard.erase(whiteGraveyard.begin() + current);
 
-    if (whiteGraveyard.empty()) startPhase = false;
+    if (whiteGraveyard.empty()) {
+        startPhase = false;
+        std::cout << "false\n";
+    }
 }
 
 void Game::handlePlayerInput(sf::Keyboard::Key key) {
