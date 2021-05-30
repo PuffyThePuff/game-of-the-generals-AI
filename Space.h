@@ -7,4 +7,5 @@ public:
 	Space() {}
 	bool isOccupied = false;
 	Piece* piece = NULL;
+	Piece* challengers[2] = { NULL, NULL };
 };

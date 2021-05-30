@@ -17,6 +17,6 @@ private:
 	Graph* G;
 	vector<Move*> possibleMoves;
 
-	void generateNext(State*, vector<Piece*>, bool);
+	void generateNext(State*, vector<Piece*>);
 	int getScore(State* V);
 };

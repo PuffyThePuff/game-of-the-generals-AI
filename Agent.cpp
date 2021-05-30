@@ -32,7 +32,7 @@ Agent::~Agent() {
 	G->adjList.clear();
 }
 
-void Agent::generateNext(State* current, vector<Piece*> pieceList, bool isWhite) {
+void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 	for (unsigned int j = 0; j < possibleMoves.size(); j++) {
 		State* next = new State();
 		copy(&current->boardState[0][0], &current->boardState[0][0] + 8 * 9, &next->boardState[0][0]);
@@ -48,18 +48,77 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList, bool isWhite)
 
 			switch (possibleMoves[j]->moveType) {
 			case Piece::Up:
-				if (next->boardState[row - 1][col].isOccupied) {
-					next->boardState[row][col].isOccupied = true;
-					next->boardState[row][col].piece = toMove;
-				}
-				else {
+				if (!next->boardState[row - 1][col].isOccupied) {
 					next->boardState[row - 1][col].isOccupied = true;
 					next->boardState[row - 1][col].piece = toMove;
+					G->add(current, next, possibleMoves[j]);
 				}
-			}
 
-			G->add(current, next, possibleMoves[j]);
+				else if (toMove->team != next->boardState[row-1][col].piece->team){
+					next->boardState[row - 1][col].challengers[0] = toMove;
+					next->boardState[row - 1][col].challengers[1] = next->boardState[row - 1][col].piece;
+					next->boardState[row - 1][col].piece = NULL;
+					G->add(current, next, possibleMoves[j]);
+				}
+
+				else G->add(current, NULL, possibleMoves[j]);
+
+				break;
+			case Piece::Right:
+				if (!next->boardState[row][col + 1].isOccupied) {
+					next->boardState[row][col + 1].isOccupied = true;
+					next->boardState[row][col + 1].piece = toMove;
+					G->add(current, next, possibleMoves[j]);
+				}
+
+				else if (toMove->team != next->boardState[row][col + 1].piece->team) {
+					next->boardState[row][col + 1].challengers[0] = toMove;
+					next->boardState[row][col + 1].challengers[1] = next->boardState[row][col + 1].piece;
+					next->boardState[row][col + 1].piece = NULL;
+					G->add(current, next, possibleMoves[j]);
+				}
+
+				else G->add(current, NULL, possibleMoves[j]);
+
+				break;
+			case Piece::Down:
+				if (!next->boardState[row + 1][col].isOccupied) {
+					next->boardState[row + 1][col].isOccupied = true;
+					next->boardState[row + 1][col].piece = toMove;
+					G->add(current, next, possibleMoves[j]);
+				}
+
+				else if (toMove->team != next->boardState[row + 1][col].piece->team) {
+					next->boardState[row + 1][col].challengers[0] = toMove;
+					next->boardState[row + 1][col].challengers[1] = next->boardState[row + 1][col].piece;
+					next->boardState[row + 1][col].piece = NULL;
+					G->add(current, next, possibleMoves[j]);
+				}
+
+				else G->add(current, NULL, possibleMoves[j]);
+
+				break;
+			case Piece::Left:
+				if (!next->boardState[row][col - 1].isOccupied) {
+					next->boardState[row][col - 1].isOccupied = true;
+					next->boardState[row][col - 1].piece = toMove;
+					G->add(current, next, possibleMoves[j]);
+				}
+
+				else if (toMove->team != next->boardState[row][col - 1].piece->team) {
+					next->boardState[row][col - 1].challengers[0] = toMove;
+					next->boardState[row][col - 1].challengers[1] = next->boardState[row][col - 1].piece;
+					next->boardState[row][col - 1].piece = NULL;
+					G->add(current, next, possibleMoves[j]);
+				}
+
+				else G->add(current, NULL, possibleMoves[j]);
+
+				break;
+			}
 		}
+
+		else G->add(current, NULL, possibleMoves[j]);
 	}
 }
 
@@ -70,10 +129,21 @@ int Agent::getScore(State* V) {
 }
 
 Move* Agent::getNextMove(State* current, vector<Piece*> whitePieces, vector<Piece*> blackPieces) {
-	generateNext(current, blackPieces, false);
+	generateNext(current, blackPieces);
 	ChildList* list = G->getConnections(current);
 	Move* move = NULL;
 	int bestScore = INFINITY;
+
+	for (unsigned int i = 0; i < possibleMoves.size(); i++) {
+		State* check = list->at(possibleMoves[i]);
+		if (check != NULL) {
+			int score = getScore(check);
+			if (score < bestScore) {
+				bestScore = score;
+				move = possibleMoves[i];
+			}
+		}
+	}
 	
 	G->adjList[current]->clear();
 	G->adjList.clear();
