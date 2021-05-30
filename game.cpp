@@ -138,9 +138,9 @@ Game::Game() :
         grid.push_back(temp);
     }
 
-    sf::Texture* titleTexture = TextureManager::getInstance()->getTexture("title");
-    titleScreen.setTexture(*titleTexture);
-    sf::Texture* mTexture = TextureManager::getInstance()->getTexture("quit");
+    sf::Texture* mTexture = TextureManager::getInstance()->getTexture("title");
+    titleScreen.setTexture(*mTexture);
+    mTexture = TextureManager::getInstance()->getTexture("quit");
     quitBox.setTexture(*mTexture);
 };
 
@@ -504,8 +504,31 @@ void Game::blackMove(){
     selectedMode = false;
 }
 
+//check flag conditions here for game win or lose
 void Game::update(sf::Time deltaTime) {
-    //check flag conditions here for game win or lose
+    //check if white and black flag is alive and at the other end
+    if (!startPhase) {
+        if (whitePieces[0]->isAlive && blackPieces[0]->isAlive) {
+            if (whitePieces[0]->currentRow == 0) {
+                win = true;
+                resultScreen.setTexture(*(TextureManager::getInstance()->getTexture("win")));
+            }
+            else if (blackPieces[0]->currentRow == 8) {
+                lose = true;
+                resultScreen.setTexture(*(TextureManager::getInstance()->getTexture("loss")));
+            }
+        }
+
+        //check if either flag dies
+        else if (!whitePieces[0]->isAlive) {
+            lose = true;
+            resultScreen.setTexture(*(TextureManager::getInstance()->getTexture("loss")));
+        }
+        else if (!blackPieces[0]->isAlive) {
+            win = true;
+            resultScreen.setTexture(*(TextureManager::getInstance()->getTexture("win")));
+        }
+    }
 }
 
 void Game::render() {
@@ -528,5 +551,6 @@ void Game::render() {
 
     if (quitMenu) mWindow.draw(quitBox);
     if (startMenu) mWindow.draw(titleScreen);
+    if (win || lose) mWindow.draw(resultScreen);
     mWindow.display();
 }
