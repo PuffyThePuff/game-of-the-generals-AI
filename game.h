@@ -32,7 +32,6 @@ private:
     sf::Sprite quitBox;
     sf::Sprite resultScreen;
     sf::Sprite titleScreen;
-    Entity* selectedPiece;
     Piece* selected = NULL;
     int selectedIndex;
 
