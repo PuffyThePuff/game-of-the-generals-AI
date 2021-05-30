@@ -138,6 +138,8 @@ Game::Game() :
         grid.push_back(temp);
     }
 
+    sf::Texture* titleTexture = TextureManager::getInstance()->getTexture("title");
+    titleScreen.setTexture(*titleTexture);
     sf::Texture* mTexture = TextureManager::getInstance()->getTexture("quit");
     quitBox.setTexture(*mTexture);
 };
@@ -172,7 +174,11 @@ void Game::processEvents(sf::Time deltaTime) {
         }
     }
 
-    if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+    if (startMenu && event.type == sf::Event::KeyReleased) {
+        startMenu = false;
+    }
+
+    else if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && !startMenu) {
         if(startPhase){
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
             if(mousePos.y >= (5 * TILE_SIZE) && mousePos.y < 480 && mousePos.x >= 60 && mousePos.x < 660){
@@ -561,5 +567,6 @@ void Game::render() {
     }
 
     if (quitMenu) mWindow.draw(quitBox);
+    if (startMenu) mWindow.draw(titleScreen);
     mWindow.display();
 }
