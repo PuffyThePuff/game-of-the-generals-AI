@@ -19,7 +19,7 @@ Piece::~Piece() {
 void Piece::place(int row, int col) {
 	currentRow = row;
 	currentCol = col;
-	sprite->setPosition(Game::TILE_SIZE * (col + 1), Game::TILE_SIZE * row);
+	sprite->setPosition(Game::TILE_SIZE * (currentCol + 1), Game::TILE_SIZE * currentRow);
 }
 
 void Piece::select() {
@@ -27,5 +27,5 @@ void Piece::select() {
 }
 
 void Piece::deselect() {
-	sprite->setColor(sf::Color::Transparent);
+	sprite->setColor(sf::Color::White);
 }
