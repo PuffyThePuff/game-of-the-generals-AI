@@ -175,7 +175,7 @@ void Game::processEvents(sf::Time deltaTime) {
     if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
         if(startPhase){
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-            if(mousePos.y >= (5 * TILE_SIZE) && mousePos.y < 480 && mousePos.x >= 60 && mousePos.x < 660){
+            if(mousePos.y >= (5 * TILE_SIZE) && mousePos.y < 480 && mousePos.x >= TILE_SIZE && mousePos.x < 660){
                 int row = mousePos.y / TILE_SIZE;
                 int col = (mousePos.x / TILE_SIZE) - 1;
                 if (board[row][col].isOccupied == false) {
@@ -209,7 +209,6 @@ void Game::processEvents(sf::Time deltaTime) {
 
             if (whiteGraveyard.empty()) { 
                 startPhase = false;
-                std::cout << "end of placement\n";
             }
         }
 
@@ -226,25 +225,6 @@ void Game::processEvents(sf::Time deltaTime) {
                 }
             }
         }
-    }
-}
-
-void Game::handlePiecePlacement(int row, int col) {
-    whiteGraveyard[selectedIndex]->place(row, col);
-    whiteGraveyard[selectedIndex]->isAlive = true;
-    board[row][col].isOccupied = true;
-
-
-    int current = selectedIndex;
-    if (selectedIndex == whiteGraveyard.size()) selectedIndex = 0;
-    else selectedIndex++;
-    whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
-
-    whiteGraveyard.erase(whiteGraveyard.begin() + current);
-
-    if (whiteGraveyard.empty()) {
-        startPhase = false;
-        std::cout << "false\n";
     }
 }
 
@@ -302,14 +282,6 @@ void Game::handlePlayerInput(sf::Keyboard::Key key) {
     else quitMenu = false;
 }
 
-void Game::collisionCheck(Entity* a, sf::Vector2i targetPos) {
-    for (int i = 0; i < entityList.size(); i++) {
-        if (targetPos == entityList[i]->boardPos) {
-            handleCollision(a, entityList[i]);
-        }
-    }
-}
-
 void Game::setBlack() {
     int k = blackPieces.size() - 1;
     for (int i = 0; i < 9; i++) {
@@ -344,18 +316,24 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             isPlayerTurn = !isPlayerTurn;
         }
 
-        else if (piece->team != board[piece->currentRow - 1][piece->currentCol].piece->team) {
-            board[piece->currentRow][piece->currentCol].isOccupied = false;
-            board[piece->currentRow][piece->currentCol].piece = NULL;
+        else {
+            if (piece->team != board[piece->currentRow - 1][piece->currentCol].piece->team) {
+                board[piece->currentRow][piece->currentCol].isOccupied = false;
+                board[piece->currentRow][piece->currentCol].piece = NULL;
 
-            board[piece->currentRow - 1][piece->currentCol].piece = 
-                determineWinner(piece, board[piece->currentRow - 1][piece->currentCol].piece);
+                board[piece->currentRow - 1][piece->currentCol].piece =
+                    determineWinner(piece, board[piece->currentRow - 1][piece->currentCol].piece);
 
-            if (piece->isAlive) {
-                piece->currentRow -= 1;
-                piece->sprite->move(0, -Game::TILE_SIZE);
+                if (board[piece->currentRow - 1][piece->currentCol].piece == NULL) {
+                    board[piece->currentRow - 1][piece->currentCol].isOccupied = false;
+                }
+
+                if (piece->isAlive) {
+                    piece->currentRow -= 1;
+                    piece->sprite->move(0, -Game::TILE_SIZE);
+                }
+                isPlayerTurn = !isPlayerTurn;
             }
-            isPlayerTurn = !isPlayerTurn;
         }
 
         break;
@@ -372,18 +350,24 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             isPlayerTurn = !isPlayerTurn;
         }
 
-        else if (piece->team != board[piece->currentRow][piece->currentCol + 1].piece->team) {
-            board[piece->currentRow][piece->currentCol].isOccupied = false;
-            board[piece->currentRow][piece->currentCol].piece = NULL;
+        else {
+            if (piece->team != board[piece->currentRow][piece->currentCol + 1].piece->team) {
+                board[piece->currentRow][piece->currentCol].isOccupied = false;
+                board[piece->currentRow][piece->currentCol].piece = NULL;
 
-            board[piece->currentRow][piece->currentCol + 1].piece =
-                determineWinner(piece, board[piece->currentRow][piece->currentCol + 1].piece);
+                board[piece->currentRow][piece->currentCol + 1].piece =
+                    determineWinner(piece, board[piece->currentRow][piece->currentCol + 1].piece);
 
-            if (piece->isAlive) {
-                piece->currentCol += 1;
-                piece->sprite->move(Game::TILE_SIZE, 0);
+                if (board[piece->currentRow][piece->currentCol + 1].piece == NULL) {
+                    board[piece->currentRow][piece->currentCol + 1].isOccupied = false;
+                }
+
+                if (piece->isAlive) {
+                    piece->currentCol += 1;
+                    piece->sprite->move(Game::TILE_SIZE, 0);
+                }
+                isPlayerTurn = !isPlayerTurn;
             }
-            isPlayerTurn = !isPlayerTurn;
         }
 
         break;
@@ -400,18 +384,24 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             isPlayerTurn = !isPlayerTurn;
         }
 
-        else if (piece->team != board[piece->currentRow + 1][piece->currentCol].piece->team) {
-            board[piece->currentRow][piece->currentCol].isOccupied = false;
-            board[piece->currentRow][piece->currentCol].piece = NULL;
+        else {
+            if (piece->team != board[piece->currentRow + 1][piece->currentCol].piece->team) {
+                board[piece->currentRow][piece->currentCol].isOccupied = false;
+                board[piece->currentRow][piece->currentCol].piece = NULL;
 
-            board[piece->currentRow + 1][piece->currentCol].piece =
-                determineWinner(piece, board[piece->currentRow + 1][piece->currentCol].piece);
+                board[piece->currentRow + 1][piece->currentCol].piece =
+                    determineWinner(piece, board[piece->currentRow + 1][piece->currentCol].piece);
 
-            if (piece->isAlive) {
-                piece->currentRow += 1;
-                piece->sprite->move(0, Game::TILE_SIZE);
+                if (board[piece->currentRow + 1][piece->currentCol].piece == NULL) {
+                    board[piece->currentRow + 1][piece->currentCol].isOccupied = false;
+                }
+
+                if (piece->isAlive) {
+                    piece->currentRow += 1;
+                    piece->sprite->move(0, Game::TILE_SIZE);
+                }
+                isPlayerTurn = !isPlayerTurn;
             }
-            isPlayerTurn = !isPlayerTurn;
         }
 
         break;
@@ -428,18 +418,24 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             isPlayerTurn = !isPlayerTurn;
         }
 
-        else if (piece->team != board[piece->currentRow][piece->currentCol - 1].piece->team) {
-            board[piece->currentRow][piece->currentCol].isOccupied = false;
-            board[piece->currentRow][piece->currentCol].piece = NULL;
+        else {
+            if (piece->team != board[piece->currentRow][piece->currentCol - 1].piece->team) {
+                board[piece->currentRow][piece->currentCol].isOccupied = false;
+                board[piece->currentRow][piece->currentCol].piece = NULL;
 
-            board[piece->currentRow][piece->currentCol - 1].piece =
-                determineWinner(piece, board[piece->currentRow][piece->currentCol - 1].piece);
+                board[piece->currentRow][piece->currentCol - 1].piece =
+                    determineWinner(piece, board[piece->currentRow][piece->currentCol - 1].piece);
 
-            if (piece->isAlive) {
-                piece->currentCol -= 1;
-                piece->sprite->move(-Game::TILE_SIZE, 0);
+                if (board[piece->currentRow][piece->currentCol - 1].piece == NULL) {
+                    board[piece->currentRow][piece->currentCol - 1].isOccupied = false;
+                }
+
+                if (piece->isAlive) {
+                    piece->currentCol -= 1;
+                    piece->sprite->move(-Game::TILE_SIZE, 0);
+                }
+                isPlayerTurn = !isPlayerTurn;
             }
-            isPlayerTurn = !isPlayerTurn;
         }
 
         break;
@@ -504,42 +500,6 @@ void Game::blackMove(){
 
 void Game::update(sf::Time deltaTime) {
     //check flag conditions here for game win or lose
-}
-
-void Game::handleCollision(Entity* aggressor, Entity* defender) {
-    //same rank, both die
-    if (aggressor->rank == defender->rank) {
-        //special condition for flag aggressor eating other flag
-        if (aggressor->rank == 0) {
-            //aggressor->eat(defender);
-            defender->sendToGraveyard(&whiteDead, &blackDead);
-        }
-        aggressor->sendToGraveyard(&whiteDead, &blackDead);
-        defender->sendToGraveyard(&whiteDead, &blackDead);
-    }
-
-    //private aggressor, spy defender
-    else if (aggressor->rank == 1 && defender->rank == 14) {
-        //aggressor->eat(defender);
-        defender->sendToGraveyard(&whiteDead, &blackDead);
-    }
-
-    //private defender, spy aggressor
-    else if (defender->rank == 1 && aggressor->rank == 14) {
-        //defender->eat(aggressor);
-        aggressor->sendToGraveyard(&whiteDead, &blackDead);
-    }
-
-    //standard rank
-    else if (aggressor->rank > defender->rank) {
-        //aggressor->eat(defender);
-        defender->sendToGraveyard(&whiteDead, &blackDead);
-    }
-
-    //lost the challenge
-    else {
-        aggressor->sendToGraveyard(&whiteDead, &blackDead);
-    }
 }
 
 void Game::render() {

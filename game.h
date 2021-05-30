@@ -17,25 +17,20 @@ private:
     void processEvents(sf::Time);
     void update(sf::Time);
     void render();
-    void createEntity(std::string, float, float, int, char);
-    void collisionCheck(Entity*, sf::Vector2i targetPos);
-    void handleCollision(Entity*, Entity*);
-    void handlePlayerInput(sf::Keyboard::Key);
-    void handlePiecePlacement(int row, int col);
-    void setBlack();
 
+    void handlePlayerInput(sf::Keyboard::Key);
     void movePiece(Piece* piece, Piece::MoveType moveType);
+    void setBlack();
+    
     Piece* determineWinner(Piece*, Piece*);
     void sendToGraveyard(Piece*);
     void blackMove();
     void checkFlags();
 private:
     sf::RenderWindow mWindow;
-    std::vector<Entity*> entityList;
     std::vector<sf::RectangleShape*> grid;
     sf::Sprite quitBox;
     sf::Sprite resultScreen;
-    Entity* selectedPiece;
     Piece* selected = NULL;
     int selectedIndex;
 
@@ -45,9 +40,6 @@ private:
     vector<Piece*> whiteGraveyard;
     vector<Piece*> blackGraveyard;
 
-    int placeIndex = 41;
-    int whiteDead = 0;
-    int blackDead = 0;
     float ticks = 0.0f;
 
     bool isClicking = false;
