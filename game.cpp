@@ -11,22 +11,26 @@ Game::Game() :
 
     // Flag
     Piece* piece0 = new Piece(0, false, "hidden");
+    piece0->isAlive = true;
     blackPieces.push_back(piece0);
 
     // Six privates
     for (int i = 0; i < 6; i++) {
         Piece* piece = new Piece(1, false, "hidden");
+        piece->isAlive = true;
         blackPieces.push_back(piece);
     }
 
     // All other pieces
     for (int i = 2; i <= 14; i++) {
         Piece* piece = new Piece(i, false, "hidden");
+        piece->isAlive = true;
         blackPieces.push_back(piece);
     }
 
     // Extra spy
     Piece* piece1 = new Piece(14, false, "hidden");
+    piece1->isAlive = true;
     blackPieces.push_back(piece1);
 
     // WHITE PIECES
@@ -194,20 +198,19 @@ void Game::processEvents(sf::Time deltaTime) {
                             ), whiteGraveyard.end()
                         );
                         whiteGraveyard.shrink_to_fit();
-                        if (selectedIndex == 0) selectedIndex = whiteGraveyard.size() - 1;
-                        else selectedIndex--;
+                        if (selectedIndex != 0) selectedIndex--;
                     }
                     
                     else {
                         whiteGraveyard.clear();
                     }
                 }
-
-                else {
-                    std::cout << "Not valid." << endl;
-                }
             }
-            if (whiteGraveyard.empty()) startPhase = false;
+
+            if (whiteGraveyard.empty()) { 
+                startPhase = false;
+                std::cout << "end of placement\n";
+            }
         }
 
         else{
@@ -215,11 +218,11 @@ void Game::processEvents(sf::Time deltaTime) {
             if(mousePos.y < 480 && mousePos.x < 660 && isPlayerTurn){
                 int row = mousePos.y / TILE_SIZE;
                 int col = (mousePos.x / TILE_SIZE) - 1;
-                for(int i = 0; i < entityList.size(); i++){
-                    if(board[row][col].isOccupied && board[row][col].piece->team){
-                        selectedMode = true;
-                        selected = board[row][col].piece;
-                    }
+                if(board[row][col].isOccupied && board[row][col].piece->team){
+                    selectedMode = true;
+                    if (selected != NULL) selected->deselect();
+                    selected = board[row][col].piece;
+                    board[row][col].piece->select();
                 }
             }
         }
@@ -233,7 +236,7 @@ void Game::handlePiecePlacement(int row, int col) {
 
 
     int current = selectedIndex;
-    if (selectedIndex == whiteGraveyard.size()) selectedIndex == 0;
+    if (selectedIndex == whiteGraveyard.size()) selectedIndex = 0;
     else selectedIndex++;
     whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
 
@@ -262,42 +265,30 @@ void Game::handlePlayerInput(sf::Keyboard::Key key) {
     }
 
     else if(isPlayerTurn && selectedMode){
-        if (key == sf::Keyboard::W && selectedPiece->boardPos.y > 0) {
-            collisionCheck(selectedPiece, sf::Vector2i(selectedPiece->boardPos.x, selectedPiece->boardPos.y - 1));
-            selectedPiece->getSprite()->move(0, -1 * 60);
-            selectedPiece->boardPos.y -= 1;
-
-            isPlayerTurn = false;
+        if (key == sf::Keyboard::W && selected->currentRow > 0) {
+            movePiece(selected, Piece::Up);
+            selected->deselect();
             selectedMode = false;
             blackMove();
         }
 
-        if (key == sf::Keyboard::S && selectedPiece->boardPos.y < 7){
-            collisionCheck(selectedPiece, sf::Vector2i(selectedPiece->boardPos.x, selectedPiece->boardPos.y + 1));
-            selectedPiece->getSprite()->move(0, 1 * 60);
-            selectedPiece->boardPos.y += 1;
-
-            isPlayerTurn = false;
+        if (key == sf::Keyboard::S && selected->currentRow <= 7){
+            movePiece(selected, Piece::Down);
+            selected->deselect();
             selectedMode = false;
             blackMove();
         }
 
-        if (key == sf::Keyboard::A && selectedPiece->boardPos.x > 0){
-            collisionCheck(selectedPiece, sf::Vector2i(selectedPiece->boardPos.x - 1, selectedPiece->boardPos.y));
-            selectedPiece->getSprite()->move(-1 * 90, 0);
-            selectedPiece->boardPos.x -= 1;
-
-            isPlayerTurn = false;
+        if (key == sf::Keyboard::A && selected->currentCol > 0){
+            movePiece(selected, Piece::Left);
+            selected->deselect();
             selectedMode = false;
             blackMove();
         }
 
-        if (key == sf::Keyboard::D && selectedPiece->boardPos.x < 8){
-            collisionCheck(selectedPiece, sf::Vector2i(selectedPiece->boardPos.x + 1, selectedPiece->boardPos.y));
-            selectedPiece->getSprite()->move(1 * 90, 0);
-            selectedPiece->boardPos.x += 1;
-
-            isPlayerTurn = false;
+        if (key == sf::Keyboard::D && selected->currentCol <= 7){
+            movePiece(selected, Piece::Right);
+            selected->deselect();
             selectedMode = false;
             blackMove();
         }
@@ -324,12 +315,16 @@ void Game::setBlack() {
     for (int i = 0; i < 9; i++) {
         for(int j = 0; j < 2; j++){
             blackPieces[k]->place(j, i);
+            board[j][i].isOccupied = true;
+            board[j][i].piece = blackPieces[k];
             k--;
         }
     }
     
     for(int i = 0; i < 3; i++){
         blackPieces[k]->place(2, i);
+        board[2][i].isOccupied = true;
+        board[2][i].piece = blackPieces[k];
         k--;
     }
 }
@@ -345,7 +340,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             board[piece->currentRow - 1][piece->currentCol].piece = piece;
 
             piece->currentRow -= 1;
-            piece->sprite->move(-Game::TILE_SIZE, 0);
+            piece->sprite->move(0, -Game::TILE_SIZE);
             isPlayerTurn = !isPlayerTurn;
         }
 
@@ -358,7 +353,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
 
             if (piece->isAlive) {
                 piece->currentRow -= 1;
-                piece->sprite->move(-Game::TILE_SIZE, 0);
+                piece->sprite->move(0, -Game::TILE_SIZE);
             }
             isPlayerTurn = !isPlayerTurn;
         }
@@ -373,7 +368,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             board[piece->currentRow][piece->currentCol + 1].piece = piece;
 
             piece->currentCol += 1;
-            piece->sprite->move(0, Game::TILE_SIZE);
+            piece->sprite->move(Game::TILE_SIZE, 0);
             isPlayerTurn = !isPlayerTurn;
         }
 
@@ -386,7 +381,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
 
             if (piece->isAlive) {
                 piece->currentCol += 1;
-                piece->sprite->move(0, Game::TILE_SIZE);
+                piece->sprite->move(Game::TILE_SIZE, 0);
             }
             isPlayerTurn = !isPlayerTurn;
         }
@@ -401,7 +396,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             board[piece->currentRow + 1][piece->currentCol].piece = piece;
 
             piece->currentRow += 1;
-            piece->sprite->move(Game::TILE_SIZE, 0);
+            piece->sprite->move(0, Game::TILE_SIZE);
             isPlayerTurn = !isPlayerTurn;
         }
 
@@ -414,7 +409,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
 
             if (piece->isAlive) {
                 piece->currentRow += 1;
-                piece->sprite->move(Game::TILE_SIZE, 0);
+                piece->sprite->move(0, Game::TILE_SIZE);
             }
             isPlayerTurn = !isPlayerTurn;
         }
@@ -429,7 +424,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
             board[piece->currentRow][piece->currentCol - 1].piece = piece;
 
             piece->currentCol -= 1;
-            piece->sprite->move(0, -Game::TILE_SIZE);
+            piece->sprite->move(-Game::TILE_SIZE, 0);
             isPlayerTurn = !isPlayerTurn;
         }
 
@@ -442,7 +437,7 @@ void Game::movePiece(Piece* piece, Piece::MoveType moveType) {
 
             if (piece->isAlive) {
                 piece->currentCol -= 1;
-                piece->sprite->move(0, -Game::TILE_SIZE);
+                piece->sprite->move(-Game::TILE_SIZE, 0);
             }
             isPlayerTurn = !isPlayerTurn;
         }
@@ -493,7 +488,7 @@ void Game::sendToGraveyard(Piece* piece) {
     piece->isAlive = false;
 
     if (piece->team) {
-        piece->sprite->setPosition(8 * TILE_SIZE, 25 * whiteGraveyard.size());
+        piece->sprite->setPosition(10 * TILE_SIZE, 25 * whiteGraveyard.size());
         whiteGraveyard.push_back(piece);
     }
     else {
@@ -502,25 +497,9 @@ void Game::sendToGraveyard(Piece* piece) {
     }
 }
 
-//temp function for testing
 void Game::blackMove(){
-    if(entityList[0]->boardPos==sf::Vector2i(2, 2)){
-        collisionCheck(entityList[0], sf::Vector2i(entityList[0]->boardPos.x + 1, entityList[0]->boardPos.y));
-        entityList[0]->getSprite()->move(1 * 90, 0);
-        entityList[0]->boardPos.x += 1;
-
-        isPlayerTurn = true;
-        selectedMode = false;
-    }
-
-    else {
-        collisionCheck(entityList[0], sf::Vector2i(entityList[0]->boardPos.x - 1, entityList[0]->boardPos.y));
-        entityList[0]->getSprite()->move(-1 * 90, 0);
-        entityList[0]->boardPos.x -= 1;
-
-        isPlayerTurn = true;
-        selectedMode = false;
-    }
+    isPlayerTurn = true;
+    selectedMode = false;
 }
 
 void Game::update(sf::Time deltaTime) {
@@ -569,10 +548,10 @@ void Game::render() {
         mWindow.draw(*grid[i]);
     }
     for (int i = 0; i < whitePieces.size(); i++) {
-        mWindow.draw(*whitePieces[i]->sprite);
+        if(whitePieces[i]->isAlive) mWindow.draw(*whitePieces[i]->sprite);
     }
     for (int i = 0; i < blackPieces.size(); i++) {
-        mWindow.draw(*blackPieces[i]->sprite);
+        if (blackPieces[i]->isAlive) mWindow.draw(*blackPieces[i]->sprite);
     }
     for (int i = 0; i < whiteGraveyard.size(); i++) {
         mWindow.draw(*whiteGraveyard[i]->sprite);
