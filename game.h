@@ -21,6 +21,7 @@ private:
     void collisionCheck(Entity*, sf::Vector2i targetPos);
     void handleCollision(Entity*, Entity*);
     void handlePlayerInput(sf::Keyboard::Key);
+    void handlePiecePlacement(int row, int col);
     void setBlack();
 
     void movePiece(Piece* piece, Piece::MoveType moveType);

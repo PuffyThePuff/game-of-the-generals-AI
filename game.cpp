@@ -1,5 +1,6 @@
 #include "game.h"
 #include <SFML/Graphics.hpp>
+#include<iostream>
 
 Game::Game() :
     mWindow(sf::VideoMode(660, 480), "Salpakan") {
@@ -36,7 +37,6 @@ Game::Game() :
     whiteGraveyard.push_back(piece2);
     piece2->sprite->setPosition(10 * TILE_SIZE, 210);
     selectedIndex = 0;
-    piece2->select();
 
     for (int i = 0; i < 6; i++) {
         Piece* piece = new Piece(1, true);
@@ -55,9 +55,7 @@ Game::Game() :
     Piece* piece3 = new Piece(14, true);
     whitePieces.push_back(piece3);
     whiteGraveyard.push_back(piece3);
-    piece3->sprite->setPosition(10 * TILE_SIZE, 110);
-    
-    whiteGraveyard[1]->sprite->setPosition(10 * TILE_SIZE, 310);
+    piece3->sprite->setPosition(660, 480);
 
     setBlack();
 
@@ -112,69 +110,88 @@ void Game::processEvents(sf::Time deltaTime) {
         }
     }
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        ticks += deltaTime.asSeconds();
-        if(startPhase && ticks > 0.03f){
-            ticks = 0.0;
+    if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left) {
+        if(startPhase){
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
-            if(mousePos.y >= 0 && mousePos.y < 480 && mousePos.x >= 0 && mousePos.x < 660){
-                sf::Vector2i indices = sf::Vector2i(mousePos.x / TILE_SIZE, mousePos.y / TILE_SIZE);
-                entityList[placeIndex]->boardPos = indices;
-                entityList[placeIndex]->getSprite()->setPosition(
-                    entityList[placeIndex]->boardPos.x * 90,
-                    entityList[placeIndex]->boardPos.y * 60
-                );
-                placeIndex--;
-            }
+            if(mousePos.y >= (5 * TILE_SIZE) && mousePos.y < 480 && mousePos.x >= 0 && mousePos.x < 660){
+                int row = mousePos.y / TILE_SIZE;
+                int col = (mousePos.x / TILE_SIZE) - 1;
+                if (board[row][col].isOccupied == false) {
+                    whiteGraveyard[selectedIndex]->place(row, col);
+                    whiteGraveyard[selectedIndex]->isAlive = true;
+                    board[row][col].isOccupied = true;
+                    board[row][col].piece = whiteGraveyard[selectedIndex];
 
+                    std::cout << selectedIndex << endl;
+                    int current = selectedIndex;
+                    if (whiteGraveyard.size() > 1) {
+                        if (selectedIndex == whiteGraveyard.size() - 1) selectedIndex == 0;
+                        else selectedIndex++;
+                    }
+                    std::cout << selectedIndex << endl;
+                    whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
+                    whiteGraveyard.erase(
+                        std::remove(
+                            whiteGraveyard.begin(),
+                            whiteGraveyard.end(),
+                            whiteGraveyard[current]
+                        ), whiteGraveyard.end()
+                    );
+                    whiteGraveyard.shrink_to_fit();
+                }
+
+                else {
+                    std::cout << "Not valid." << endl;
+                }
+            }
             if (whiteGraveyard.empty()) startPhase = false;
         }
 
         else{
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
             if(mousePos.y < 480 && mousePos.x < 660 && isPlayerTurn){
-                sf::Vector2i indices = sf::Vector2i(mousePos.x / 90, mousePos.y / 60);
+                int row = mousePos.y / TILE_SIZE;
+                int col = (mousePos.x / TILE_SIZE) - 1;
                 for(int i = 0; i < entityList.size(); i++){
-                    if(entityList[i]->boardPos==indices && entityList[i]->team=='w'){
+                    if(board[row][col].isOccupied && board[row][col].piece->team){
                         selectedMode = true;
-                        selectedPiece = entityList[i];
+                        selected = board[row][col].piece;
                     }
                 }
             }
         }
-        
     }
+}
+
+void Game::handlePiecePlacement(int row, int col) {
+    whiteGraveyard[selectedIndex]->place(row, col);
+    whiteGraveyard[selectedIndex]->isAlive = true;
+    board[row][col].isOccupied = true;
+
+
+    int current = selectedIndex;
+    if (selectedIndex == whiteGraveyard.size()) selectedIndex == 0;
+    else selectedIndex++;
+    whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
+
+    whiteGraveyard.erase(whiteGraveyard.begin() + current);
+
+    if (whiteGraveyard.empty()) startPhase = false;
 }
 
 void Game::handlePlayerInput(sf::Keyboard::Key key) {
     if (startPhase) {
         if (key == sf::Keyboard::W) {
-            whiteGraveyard[selectedIndex]->deselect();
-            if (selectedIndex == 0) whiteGraveyard[whiteGraveyard.size() - 1]->sprite->setPosition(660, 480);
-            else whiteGraveyard[selectedIndex - 1]->sprite->setPosition(660, 480);
-            whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 110);
-
+            whiteGraveyard[selectedIndex]->sprite->setPosition(660, 480);
             if (selectedIndex == whiteGraveyard.size() - 1) selectedIndex = 0;
             else selectedIndex++;
-
-            whiteGraveyard[selectedIndex]->select();
-            whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
-            if (selectedIndex == whiteGraveyard.size() - 1) whiteGraveyard[0]->sprite->setPosition(10 * TILE_SIZE, 310);
-            else whiteGraveyard[selectedIndex + 1]->sprite->setPosition(10 * TILE_SIZE, 310);
+            whiteGraveyard[selectedIndex]->sprite->setPosition(10* TILE_SIZE, 210);
         }
         if (key == sf::Keyboard::S) {
-            whiteGraveyard[selectedIndex]->deselect();
-            if (selectedIndex == whiteGraveyard.size() - 1) whiteGraveyard[0]->sprite->setPosition(660, 480);
-            else whiteGraveyard[selectedIndex + 1]->sprite->setPosition(660, 480);
-            whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 310);
-
+            whiteGraveyard[selectedIndex]->sprite->setPosition(660, 480);
             if (selectedIndex == 0) selectedIndex = whiteGraveyard.size() - 1;
             else selectedIndex--;
-
-            whiteGraveyard[selectedIndex]->select();
             whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
-            if (selectedIndex == 0) whiteGraveyard[whiteGraveyard.size() - 1]->sprite->setPosition(10 * TILE_SIZE, 310);
-            else whiteGraveyard[selectedIndex - 1]->sprite->setPosition(10 * TILE_SIZE, 110);
         }
     }
 
