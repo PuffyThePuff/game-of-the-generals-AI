@@ -5,30 +5,24 @@ Agent::Agent() {
 	G = new Graph();
 
 	for (unsigned int i = 0; i < 21; i++) {
-		Piece::MoveType move;
-		
-		move = Piece::Up;
 		Move* moveUp = new Move();
 		moveUp->pieceIndex = i;
-		moveUp->moveType = move;
+		moveUp->moveType = Piece::Up;
 		possibleMoves.push_back(moveUp);
 
-		move = Piece::Right;
 		Move* moveRight = new Move();
 		moveRight->pieceIndex = i;
-		moveRight->moveType = move;
+		moveRight->moveType = Piece::Right;
 		possibleMoves.push_back(moveRight);
 
-		move = Piece::Down;
 		Move* moveDown = new Move();
 		moveDown->pieceIndex = i;
-		moveDown->moveType = move;
+		moveDown->moveType = Piece::Down;
 		possibleMoves.push_back(moveDown);
 
-		move = Piece::Left;
 		Move* moveLeft = new Move();
 		moveLeft->pieceIndex = i;
-		moveLeft->moveType = move;
+		moveLeft->moveType = Piece::Left;
 		possibleMoves.push_back(moveLeft);
 	}
 }
