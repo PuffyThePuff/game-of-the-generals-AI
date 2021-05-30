@@ -10,52 +10,112 @@ Game::Game() :
     // BLACK PIECES
 
     // Flag
-    Piece* piece0 = new Piece(0, false);
+    Piece* piece0 = new Piece(0, false, "hidden");
     blackPieces.push_back(piece0);
 
     // Six privates
     for (int i = 0; i < 6; i++) {
-        Piece* piece = new Piece(1, false);
+        Piece* piece = new Piece(1, false, "hidden");
         blackPieces.push_back(piece);
     }
 
     // All other pieces
     for (int i = 2; i <= 14; i++) {
-        Piece* piece = new Piece(i, false);
+        Piece* piece = new Piece(i, false, "hidden");
         blackPieces.push_back(piece);
     }
 
     // Extra spy
-    Piece* piece1 = new Piece(14, false);
+    Piece* piece1 = new Piece(14, false, "hidden");
     blackPieces.push_back(piece1);
 
     // WHITE PIECES
 
-    Piece* piece2 = new Piece(0, true);
+    //flag
+    Piece* piece2 = new Piece(0, true, "flag_white");
     whitePieces.push_back(piece2);
     // Prepare for piece placement.
     whiteGraveyard.push_back(piece2);
     piece2->sprite->setPosition(10 * TILE_SIZE, 210);
     selectedIndex = 0;
 
+    //six privates
     for (int i = 0; i < 6; i++) {
-        Piece* piece = new Piece(1, true);
+        Piece* piece = new Piece(1, true, "private_white");
         whitePieces.push_back(piece);
         whiteGraveyard.push_back(piece);
         piece->sprite->setPosition(660, 480);
     }
 
-    for (int i = 2; i <= 14; i++) {
-        Piece* piece = new Piece(i, true);
-        whitePieces.push_back(piece);
-        whiteGraveyard.push_back(piece);
-        piece->sprite->setPosition(660, 480);
-    }
+    Piece* piece = new Piece(2, true, "sergeant_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
 
-    Piece* piece3 = new Piece(14, true);
-    whitePieces.push_back(piece3);
-    whiteGraveyard.push_back(piece3);
-    piece3->sprite->setPosition(660, 480);
+    piece = new Piece(3, true, "2ndlt_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(4, true, "1stlt_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(5, true, "captain_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(6, true, "major_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(7, true, "ltcolonel_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(8, true, "colonel_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(9, true, "1star_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(10, true, "2star_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(11, true, "3star_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(12, true, "4star_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    piece = new Piece(13, true, "5star_white");
+    whitePieces.push_back(piece);
+    whiteGraveyard.push_back(piece);
+    piece->sprite->setPosition(660, 480);
+
+    //two spies
+    for (int i = 0; i < 2; i++) {
+        Piece* piece3 = new Piece(14, true, "spy_white");
+        whitePieces.push_back(piece3);
+        whiteGraveyard.push_back(piece3);
+        piece3->sprite->setPosition(10 * TILE_SIZE, 110);
+    }
+    
+    whiteGraveyard[1]->sprite->setPosition(10 * TILE_SIZE, 310);
 
     setBlack();
 

@@ -12,7 +12,7 @@ public:
 		Left = 3
 	};
 
-	Piece(int newRank, bool isWhite);
+	Piece(int newRank, bool isWhite, std::string key);
 	~Piece();
 	void place(int row, int col);
 	void select();
