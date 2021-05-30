@@ -57,4 +57,6 @@ private:
     bool selectedMode = false;
     bool quitMenu = false;
     bool startMenu = true;
+    bool win = false;
+    bool lose = false;
 };
