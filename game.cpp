@@ -112,10 +112,8 @@ Game::Game() :
         Piece* piece3 = new Piece(14, true, "spy_white");
         whitePieces.push_back(piece3);
         whiteGraveyard.push_back(piece3);
-        piece3->sprite->setPosition(10 * TILE_SIZE, 110);
+        piece3->sprite->setPosition(660, 480);
     }
-    
-    whiteGraveyard[1]->sprite->setPosition(10 * TILE_SIZE, 310);
 
     setBlack();
 
@@ -182,23 +180,27 @@ void Game::processEvents(sf::Time deltaTime) {
                     board[row][col].isOccupied = true;
                     board[row][col].piece = whiteGraveyard[selectedIndex];
 
-                    std::cout << selectedIndex << endl;
                     int current = selectedIndex;
                     if (whiteGraveyard.size() > 1) {
-                        if (selectedIndex == whiteGraveyard.size() - 1) selectedIndex == 0;
+                        if (selectedIndex == whiteGraveyard.size() - 1) selectedIndex = 0;
                         else selectedIndex++;
+
+                        whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
+                        whiteGraveyard.erase(
+                            std::remove(
+                                whiteGraveyard.begin(),
+                                whiteGraveyard.end(),
+                                whiteGraveyard[current]
+                            ), whiteGraveyard.end()
+                        );
+                        whiteGraveyard.shrink_to_fit();
+                        if (selectedIndex == 0) selectedIndex = whiteGraveyard.size() - 1;
+                        else selectedIndex--;
                     }
-                    std::cout << selectedIndex << endl;
-                    whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
-                    whiteGraveyard.erase(
-                        std::remove(
-                            whiteGraveyard.begin(),
-                            whiteGraveyard.end(),
-                            whiteGraveyard[current]
-                        ), whiteGraveyard.end()
-                    );
-                    whiteGraveyard.shrink_to_fit();
-                    selectedIndex--;
+                    
+                    else {
+                        whiteGraveyard.clear();
+                    }
                 }
 
                 else {
