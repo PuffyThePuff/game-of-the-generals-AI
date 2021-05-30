@@ -218,7 +218,7 @@ void Game::processEvents(sf::Time deltaTime) {
             if(mousePos.y < 480 && mousePos.x < 660 && isPlayerTurn){
                 int row = mousePos.y / TILE_SIZE;
                 int col = (mousePos.x / TILE_SIZE) - 1;
-                if(board[row][col].isOccupied){
+                if(board[row][col].isOccupied && board[row][col].piece->team){
                     selectedMode = true;
                     if (selected != NULL) selected->deselect();
                     selected = board[row][col].piece;
@@ -315,12 +315,16 @@ void Game::setBlack() {
     for (int i = 0; i < 9; i++) {
         for(int j = 0; j < 2; j++){
             blackPieces[k]->place(j, i);
+            board[j][i].isOccupied = true;
+            board[j][i].piece = blackPieces[k];
             k--;
         }
     }
     
     for(int i = 0; i < 3; i++){
         blackPieces[k]->place(2, i);
+        board[2][i].isOccupied = true;
+        board[2][i].piece = blackPieces[k];
         k--;
     }
 }
@@ -484,7 +488,7 @@ void Game::sendToGraveyard(Piece* piece) {
     piece->isAlive = false;
 
     if (piece->team) {
-        piece->sprite->setPosition(8 * TILE_SIZE, 25 * whiteGraveyard.size());
+        piece->sprite->setPosition(10 * TILE_SIZE, 25 * whiteGraveyard.size());
         whiteGraveyard.push_back(piece);
     }
     else {
