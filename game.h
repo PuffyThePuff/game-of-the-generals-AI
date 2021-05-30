@@ -31,6 +31,11 @@ private:
     std::vector<sf::RectangleShape*> grid;
     sf::Sprite quitBox;
     sf::Sprite resultScreen;
+<<<<<<< HEAD
+=======
+    sf::Sprite titleScreen;
+    Entity* selectedPiece;
+>>>>>>> a59160a461e6ca9eaffa68520b526c1b5741d8a5
     Piece* selected = NULL;
     int selectedIndex;
 
@@ -47,4 +52,5 @@ private:
     bool isPlayerTurn = true;
     bool selectedMode = false;
     bool quitMenu = false;
+    bool startMenu = true;
 };

@@ -38,6 +38,7 @@ void TextureManager::loadAll() {
 	loadTexture("quit", "assets/quitmenu.png");
 	loadTexture("win", "assets/winScreen.png");
 	loadTexture("loss", "assets/loseScreen.png");
+	loadTexture("title", "assets/titleScreen.png");
 }
 
 void TextureManager::loadTexture(std::string key, std::string path) {
