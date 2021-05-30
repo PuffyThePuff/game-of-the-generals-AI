@@ -34,7 +34,7 @@ Game::Game() :
     whitePieces.push_back(piece2);
     // Prepare for piece placement.
     whiteGraveyard.push_back(piece2);
-    piece2->sprite->setPosition(9 * TILE_SIZE, 210);
+    piece2->sprite->setPosition(10 * TILE_SIZE, 210);
     selectedIndex = 0;
     piece2->select();
 
@@ -57,24 +57,24 @@ Game::Game() :
     whiteGraveyard.push_back(piece3);
     piece3->sprite->setPosition(10 * TILE_SIZE, 110);
     
-    whitePieces[1]->sprite->setPosition(10 * TILE_SIZE, 310);
+    whiteGraveyard[1]->sprite->setPosition(10 * TILE_SIZE, 310);
 
     setBlack();
 
     //add grid here
     sf::RectangleShape* temp;
-    for (int i = 0; i < 11; i++) {
+    for (int i = 1; i < 11; i++) {
         temp = new sf::RectangleShape;
         temp->setFillColor(sf::Color::White);
-        temp->setPosition(i * 90, 0);
-        temp->setSize(sf::Vector2f(5, 60 * 8));
+        temp->setPosition(i * TILE_SIZE, 0);
+        temp->setSize(sf::Vector2f(5, 480));
         grid.push_back(temp);
     }
     for (int i = 0; i < 9; i++) {
         temp = new sf::RectangleShape;
         temp->setFillColor(sf::Color::White);
-        temp->setPosition(0, i * 60);
-        temp->setSize(sf::Vector2f(90 * 9, 5));
+        temp->setPosition(TILE_SIZE, i * TILE_SIZE);
+        temp->setSize(sf::Vector2f(540, 5));
         grid.push_back(temp);
     }
 
@@ -148,29 +148,33 @@ void Game::processEvents(sf::Time deltaTime) {
 
 void Game::handlePlayerInput(sf::Keyboard::Key key) {
     if (startPhase) {
-        if (key == sf::Keyboard::A) {
+        if (key == sf::Keyboard::W) {
             whiteGraveyard[selectedIndex]->deselect();
-            whiteGraveyard[selectedIndex]->sprite->move(0, -100);
-            whiteGraveyard[selectedIndex - 1]->sprite->setPosition(660, 480);
+            if (selectedIndex == 0) whiteGraveyard[whiteGraveyard.size() - 1]->sprite->setPosition(660, 480);
+            else whiteGraveyard[selectedIndex - 1]->sprite->setPosition(660, 480);
+            whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 110);
 
             if (selectedIndex == whiteGraveyard.size() - 1) selectedIndex = 0;
             else selectedIndex++;
 
             whiteGraveyard[selectedIndex]->select();
-            whiteGraveyard[selectedIndex]->sprite->move(0, -100);
-            whiteGraveyard[selectedIndex + 1]->sprite->setPosition(9 * TILE_SIZE, 310);
+            whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
+            if (selectedIndex == whiteGraveyard.size() - 1) whiteGraveyard[0]->sprite->setPosition(10 * TILE_SIZE, 310);
+            else whiteGraveyard[selectedIndex + 1]->sprite->setPosition(10 * TILE_SIZE, 310);
         }
-        if (key == sf::Keyboard::D) {
+        if (key == sf::Keyboard::S) {
             whiteGraveyard[selectedIndex]->deselect();
-            whiteGraveyard[selectedIndex]->sprite->move(0, 100);
-            whiteGraveyard[selectedIndex + 1]->sprite->setPosition(660, 480);
+            if (selectedIndex == whiteGraveyard.size() - 1) whiteGraveyard[0]->sprite->setPosition(660, 480);
+            else whiteGraveyard[selectedIndex + 1]->sprite->setPosition(660, 480);
+            whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 310);
 
             if (selectedIndex == 0) selectedIndex = whiteGraveyard.size() - 1;
             else selectedIndex--;
 
             whiteGraveyard[selectedIndex]->select();
-            whiteGraveyard[selectedIndex]->sprite->move(0, 100);
-            whiteGraveyard[selectedIndex - 1]->sprite->setPosition(9 * TILE_SIZE, 110);
+            whiteGraveyard[selectedIndex]->sprite->setPosition(10 * TILE_SIZE, 210);
+            if (selectedIndex == 0) whiteGraveyard[whiteGraveyard.size() - 1]->sprite->setPosition(10 * TILE_SIZE, 310);
+            else whiteGraveyard[selectedIndex - 1]->sprite->setPosition(10 * TILE_SIZE, 110);
         }
     }
 
@@ -233,18 +237,16 @@ void Game::collisionCheck(Entity* a, sf::Vector2i targetPos) {
 }
 
 void Game::setBlack() {
-    int k = 20;
+    int k = blackPieces.size() - 1;
     for (int i = 0; i < 9; i++) {
         for(int j = 0; j < 2; j++){
-            entityList[k]->boardPos = sf::Vector2i(i, j);
-            entityList[k]->getSprite()->setPosition(i * 90, j * 60);
+            blackPieces[k]->place(j, i);
             k--;
         }
     }
     
     for(int i = 0; i < 3; i++){
-        entityList[k]->boardPos = sf::Vector2i(i, 2);
-        entityList[k]->getSprite()->setPosition(i * 90, 2 * 60);
+        blackPieces[k]->place(2, i);
         k--;
     }
 }
@@ -480,12 +482,22 @@ void Game::handleCollision(Entity* aggressor, Entity* defender) {
 
 void Game::render() {
     mWindow.clear();
-    for (int i = 0; i < entityList.size(); i++) {
-        mWindow.draw(*entityList[i]->getSprite());
-    }
     for (int i = 0; i < grid.size(); i++) {
         mWindow.draw(*grid[i]);
     }
+    for (int i = 0; i < whitePieces.size(); i++) {
+        mWindow.draw(*whitePieces[i]->sprite);
+    }
+    for (int i = 0; i < blackPieces.size(); i++) {
+        mWindow.draw(*blackPieces[i]->sprite);
+    }
+    for (int i = 0; i < whiteGraveyard.size(); i++) {
+        mWindow.draw(*whiteGraveyard[i]->sprite);
+    }
+    for (int i = 0; i < blackGraveyard.size(); i++) {
+        mWindow.draw(*blackGraveyard[i]->sprite);
+    }
+
     if (quitMenu) mWindow.draw(quitBox);
     mWindow.display();
 }
