@@ -9,6 +9,7 @@ Piece::Piece(int newRank, bool isWhite, std::string key) {
 	sf::Texture* texture;
 	if (!isWhite) texture = TextureManager::getInstance()->getTexture("hidden");
 	else texture = TextureManager::getInstance()->getTexture(key);
+	sprite->setTexture(*texture);
 }
 
 Piece::~Piece() {
