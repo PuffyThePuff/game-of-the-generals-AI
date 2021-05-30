@@ -1,14 +1,14 @@
 #include "Piece.h"
 #include "game.h"
 
-Piece::Piece(int newRank, bool isWhite) {
+Piece::Piece(int newRank, bool isWhite, std::string key) {
 	sprite = new sf::Sprite();
 	rank = newRank;
 	team = isWhite;
 	
 	sf::Texture* texture;
 	if (!isWhite) texture = TextureManager::getInstance()->getTexture("hidden");
-	else texture = TextureManager::getInstance()->getTexture(std::to_string(rank));
+	else texture = TextureManager::getInstance()->getTexture(key);
 }
 
 Piece::~Piece() {
