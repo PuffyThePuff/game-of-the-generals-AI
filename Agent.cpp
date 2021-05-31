@@ -42,77 +42,103 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 		if (toMove->isAlive) {
 			int row = toMove->currentRow;
 			int col = toMove->currentCol;
-			next->boardState[row][col].isOccupied = false;
-			next->boardState[row][col].piece = NULL;
 
 			switch (possibleMoves[j]->moveType) {
 			case Piece::Up:
-				if (!next->boardState[row - 1][col].isOccupied) {
-					next->boardState[row - 1][col].isOccupied = true;
-					next->boardState[row - 1][col].piece = toMove;
-					G->add(current, next, possibleMoves[j]);
-				}
+				if (row > 0) {
+					if (!next->boardState[row - 1][col].isOccupied) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row - 1][col].isOccupied = true;
+						next->boardState[row - 1][col].piece = toMove;
+						G->add(current, next, possibleMoves[j]);
+					}
 
-				else if (toMove->team != next->boardState[row-1][col].piece->team){
-					next->boardState[row - 1][col].challengers[0] = toMove;
-					next->boardState[row - 1][col].challengers[1] = next->boardState[row - 1][col].piece;
-					next->boardState[row - 1][col].piece = NULL;
-					G->add(current, next, possibleMoves[j]);
-				}
+					else if (toMove->team != next->boardState[row - 1][col].piece->team) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row - 1][col].challengers[0] = toMove;
+						next->boardState[row - 1][col].challengers[1] = next->boardState[row - 1][col].piece;
+						next->boardState[row - 1][col].piece = NULL;
+						G->add(current, next, possibleMoves[j]);
+					}
 
+					else G->add(current, NULL, possibleMoves[j]);
+				}
+				
 				else G->add(current, NULL, possibleMoves[j]);
-
 				break;
 			case Piece::Right:
-				if (!next->boardState[row][col + 1].isOccupied) {
-					next->boardState[row][col + 1].isOccupied = true;
-					next->boardState[row][col + 1].piece = toMove;
-					G->add(current, next, possibleMoves[j]);
+				if (col < 8) {
+					if (!next->boardState[row][col + 1].isOccupied) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row][col + 1].isOccupied = true;
+						next->boardState[row][col + 1].piece = toMove;
+						G->add(current, next, possibleMoves[j]);
+					}
+
+					else if (toMove->team != next->boardState[row][col + 1].piece->team) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row][col + 1].challengers[0] = toMove;
+						next->boardState[row][col + 1].challengers[1] = next->boardState[row][col + 1].piece;
+						next->boardState[row][col + 1].piece = NULL;
+						G->add(current, next, possibleMoves[j]);
+					}
+
+					else G->add(current, NULL, possibleMoves[j]);
 				}
-
-				else if (toMove->team != next->boardState[row][col + 1].piece->team) {
-					next->boardState[row][col + 1].challengers[0] = toMove;
-					next->boardState[row][col + 1].challengers[1] = next->boardState[row][col + 1].piece;
-					next->boardState[row][col + 1].piece = NULL;
-					G->add(current, next, possibleMoves[j]);
-				}
-
-				else G->add(current, NULL, possibleMoves[j]);
-
+				
+				G->add(current, NULL, possibleMoves[j]);
 				break;
 			case Piece::Down:
-				if (!next->boardState[row + 1][col].isOccupied) {
-					next->boardState[row + 1][col].isOccupied = true;
-					next->boardState[row + 1][col].piece = toMove;
-					G->add(current, next, possibleMoves[j]);
-				}
+				if (row < 7) {
+					if (!next->boardState[row + 1][col].isOccupied) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row + 1][col].isOccupied = true;
+						next->boardState[row + 1][col].piece = toMove;
+						G->add(current, next, possibleMoves[j]);
+					}
 
-				else if (toMove->team != next->boardState[row + 1][col].piece->team) {
-					next->boardState[row + 1][col].challengers[0] = toMove;
-					next->boardState[row + 1][col].challengers[1] = next->boardState[row + 1][col].piece;
-					next->boardState[row + 1][col].piece = NULL;
-					G->add(current, next, possibleMoves[j]);
-				}
+					else if (toMove->team != next->boardState[row + 1][col].piece->team) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row + 1][col].challengers[0] = toMove;
+						next->boardState[row + 1][col].challengers[1] = next->boardState[row + 1][col].piece;
+						next->boardState[row + 1][col].piece = NULL;
+						G->add(current, next, possibleMoves[j]);
+					}
 
+					else G->add(current, NULL, possibleMoves[j]);
+				}
+				
 				else G->add(current, NULL, possibleMoves[j]);
-
 				break;
 			case Piece::Left:
-				if (!next->boardState[row][col - 1].isOccupied) {
-					next->boardState[row][col - 1].isOccupied = true;
-					next->boardState[row][col - 1].piece = toMove;
-					G->add(current, next, possibleMoves[j]);
-				}
+				if (col > 0) {
+					if (!next->boardState[row][col - 1].isOccupied) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row][col - 1].isOccupied = true;
+						next->boardState[row][col - 1].piece = toMove;
+						G->add(current, next, possibleMoves[j]);
+					}
 
-				else if (toMove->team != next->boardState[row][col - 1].piece->team) {
-					next->boardState[row][col - 1].challengers[0] = toMove;
-					next->boardState[row][col - 1].challengers[1] = next->boardState[row][col - 1].piece;
-					next->boardState[row][col - 1].piece = NULL;
-					G->add(current, next, possibleMoves[j]);
-				}
+					else if (toMove->team != next->boardState[row][col - 1].piece->team) {
+						next->boardState[row][col].isOccupied = false;
+						next->boardState[row][col].piece = NULL;
+						next->boardState[row][col - 1].challengers[0] = toMove;
+						next->boardState[row][col - 1].challengers[1] = next->boardState[row][col - 1].piece;
+						next->boardState[row][col - 1].piece = NULL;
+						G->add(current, next, possibleMoves[j]);
+					}
 
+					else G->add(current, NULL, possibleMoves[j]);
+				}
+				
 				else G->add(current, NULL, possibleMoves[j]);
-
 				break;
 			}
 		}

@@ -514,7 +514,7 @@ void Game::sendToGraveyard(Piece* piece) {
 
 void Game::blackMove(){
     State* current = new State();
-    copy(&board[0][0], &board[0][0] + 4 * 5, &current->boardState[0][0]);
+    copy(&board[0][0], &board[0][0] + 8 * 9, &current->boardState[0][0]);
     Move* move = agent.getNextMove(current, whitePieces, blackPieces);
     movePiece(blackPieces[move->pieceIndex], move->moveType);
 }
