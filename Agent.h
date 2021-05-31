@@ -22,7 +22,9 @@ private:
 	void generateNext(State*, vector<Piece*>);
 	float getScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces);
 	float getOffensiveScore(Move* move, State* state, vector<Piece*> ownPieces);
-	float getDefensiveScore(vector<Piece*> ownPieces, vector<Piece*> enemyPieces);
+	float getDefensiveScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces);
+	float getOpennessScore(State* state, vector<Piece*> ownPieces);
+	bool flagIsSafe(State* state, Piece* flag);
 	float getWinProbability(int rank);
 	float getElimProbability(int rank);
 };

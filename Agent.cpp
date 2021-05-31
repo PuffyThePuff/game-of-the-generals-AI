@@ -124,7 +124,10 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 
 float Agent::getScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces) {
 	float score = 0.f;
-	
+	score += getOffensiveScore(move, state, ownPieces);
+	score += getDefensiveScore(move, state, ownPieces, enemyPieces);
+	score += getOpennessScore(state, ownPieces);
+	if (!flagIsSafe(state, ownPieces[0])) score += FLAG_PENALTY;
 	return score;
 }
 
@@ -140,11 +143,11 @@ float Agent::getOffensiveScore(Move* move, State* state, vector<Piece*> ownPiece
 
 			// Check adjacent spaces for enemies.
 			if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece != NULL) {
-				// Check if space above.
+				// Check space above.
 				if (
 					state->boardState[row - 1][col].isOccupied &&
 					(state->boardState[row - 1][col].piece->team != ownPieces[i]->team)
-					) {
+				) {
 					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
 				}
 
@@ -152,7 +155,7 @@ float Agent::getOffensiveScore(Move* move, State* state, vector<Piece*> ownPiece
 				if (
 					state->boardState[row + 1][col].isOccupied &&
 					(state->boardState[row + 1][col].piece->team != ownPieces[i]->team)
-					) {
+				) {
 					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
 				}
 
@@ -160,7 +163,7 @@ float Agent::getOffensiveScore(Move* move, State* state, vector<Piece*> ownPiece
 				if (
 					state->boardState[row][col - 1].isOccupied &&
 					(state->boardState[row][col - 1].piece->team != ownPieces[i]->team)
-					) {
+				) {
 					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
 				}
 
@@ -168,7 +171,7 @@ float Agent::getOffensiveScore(Move* move, State* state, vector<Piece*> ownPiece
 				if (
 					state->boardState[row][col + 1].isOccupied &&
 					(state->boardState[row][col + 1].piece->team != ownPieces[i]->team)
-					) {
+				) {
 					score += POINTS_PER_PIECE * getWinProbability(ownPieces[i]->rank);
 				}
 			}
@@ -197,7 +200,7 @@ float Agent::getOffensiveScore(Move* move, State* state, vector<Piece*> ownPiece
 		if (
 			state->boardState[row][col].challengers[0] != NULL &&
 			state->boardState[row][col].challengers[1] != NULL
-			) {
+		) {
 			score += (POINTS_PER_PIECE * getWinProbability(last->rank));
 		}
 	}
@@ -205,12 +208,163 @@ float Agent::getOffensiveScore(Move* move, State* state, vector<Piece*> ownPiece
 	return score;
 }
 
-float Agent::getDefensiveScore(vector<Piece*> ownPieces, vector<Piece*> enemyPieces) {
+float Agent::getDefensiveScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces) {
 	float score = 0.f;
-	for (int i = 0; i < ownPieces.size(); i++) {
-		score += getWinProbability(ownPieces[i]->rank);
+
+	for (int i = 0; i < enemyPieces.size(); i++) {
+		if (enemyPieces[i]->isAlive) {
+			score -= POINTS_PER_PIECE * 0.424;
+				// Average win probability.
+		}
 	}
+
+	for (int i = 0; i < ownPieces.size(); i++) {
+		if (ownPieces[i]->isAlive && i != move->pieceIndex) {
+			int row = ownPieces[i]->currentRow;
+			int col = ownPieces[i]->currentCol;
+
+			// Check adjacent spaces for enemies.
+			if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece != NULL) {
+				// Check space above.
+				if (
+					state->boardState[row - 1][col].isOccupied &&
+					(state->boardState[row - 1][col].piece->team != ownPieces[i]->team)
+				) {
+					score -= POINTS_PER_PIECE * getElimProbability(ownPieces[i]->rank);
+				}
+
+				// Check space below.
+				if (
+					state->boardState[row + 1][col].isOccupied &&
+					(state->boardState[row + 1][col].piece->team != ownPieces[i]->team)
+				) {
+					score -= POINTS_PER_PIECE * getElimProbability(ownPieces[i]->rank);
+				}
+
+				// Check space to the left.
+				if (
+					state->boardState[row][col - 1].isOccupied &&
+					(state->boardState[row][col - 1].piece->team != ownPieces[i]->team)
+				) {
+					score -= POINTS_PER_PIECE * getElimProbability(ownPieces[i]->rank);
+				}
+
+				// Check space to the right.
+				if (
+					state->boardState[row][col + 1].isOccupied &&
+					(state->boardState[row][col + 1].piece->team != ownPieces[i]->team)
+				) {
+					score -= POINTS_PER_PIECE * getElimProbability(ownPieces[i]->rank);
+				}
+			}
+		}
+	}
+
+	Piece* last = ownPieces[move->pieceIndex];
+	int row = last->currentRow;
+	int col = last->currentCol;
+	switch (move->moveType) {
+	case Piece::Up:
+		row -= 1;
+		break;
+	case Piece::Right:
+		col += 1;
+		break;
+	case Piece::Down:
+		row += 1;
+		break;
+	case Piece::Left:
+		col -= 1;
+		break;
+	}
+
+	if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece == NULL) {
+		if (
+			state->boardState[row][col].challengers[0] != NULL &&
+			state->boardState[row][col].challengers[1] != NULL
+		) {
+			score -= (POINTS_PER_PIECE * getElimProbability(last->rank));
+		}
+	}
+
 	return score;
+}
+
+float Agent::getOpennessScore(State* state, vector<Piece*> ownPieces) {
+	float score = 0.f;
+
+	for (int i = 0; i < ownPieces.size(); i++) {
+		if (ownPieces[i]->isAlive) {
+			int row = ownPieces[i]->currentRow;
+			int col = ownPieces[i]->currentCol;
+
+			// Check adjacent spaces if free.
+			if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece != NULL) {
+				// Check space above.
+				if (!state->boardState[row - 1][col].isOccupied) {
+					score += 1.f;
+				}
+
+				// Check space below.
+				if (!state->boardState[row + 1][col].isOccupied) {
+					score += 1.f;
+				}
+
+				// Check space to the left.
+				if (!state->boardState[row][col - 1].isOccupied) {
+					score += 1.f;
+				}
+
+				// Check space to the right.
+				if (!state->boardState[row][col + 1].isOccupied) {
+					score += 1.f;
+				}
+			}
+		}
+	}
+
+	return score;
+}
+
+bool Agent::flagIsSafe(State* state, Piece* flag) {
+	int row = flag->currentRow;
+	int col = flag->currentCol;
+
+	if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece != NULL) {
+		// Check space above.
+		if (
+			state->boardState[row - 1][col].isOccupied &&
+			(state->boardState[row - 1][col].piece->team != flag->team)
+		) {
+			return false;
+		}
+
+		// Check space below.
+		if (
+			state->boardState[row + 1][col].isOccupied &&
+			(state->boardState[row + 1][col].piece->team != flag->team)
+		) {
+			return false;
+		}
+
+		// Check space to the left.
+		if (
+			state->boardState[row][col - 1].isOccupied &&
+			(state->boardState[row][col - 1].piece->team != flag->team)
+		) {
+			return false;
+		}
+
+		// Check space to the right.
+		if (
+			state->boardState[row][col + 1].isOccupied &&
+			(state->boardState[row][col + 1].piece->team != flag->team)
+		) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 float Agent::getWinProbability(int rank) {
