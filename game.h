@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "Piece.h"
 #include"Space.h"
+#include"Agent.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
 #pragma once
@@ -36,6 +37,7 @@ private:
     int selectedIndex;
 
     Space board[8][9];
+    Agent agent;
     vector<Piece*> whitePieces;
     vector<Piece*> blackPieces;
     vector<Piece*> whiteGraveyard;

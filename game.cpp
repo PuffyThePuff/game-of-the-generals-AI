@@ -513,8 +513,10 @@ void Game::sendToGraveyard(Piece* piece) {
 }
 
 void Game::blackMove(){
-    isPlayerTurn = true;
-    selectedMode = false;
+    State* current = new State();
+    copy(&board[0][0], &board[0][0] + 4 * 5, &current->boardState[0][0]);
+    Move* move = agent.getNextMove(current, whitePieces, blackPieces);
+    movePiece(blackPieces[move->pieceIndex], move->moveType);
 }
 
 //check flag conditions here for game win or lose
