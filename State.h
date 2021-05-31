@@ -5,6 +5,6 @@ class State
 {
 public:
 	State() {}
-
+	~State() {}
 	Space boardState[8][9];
 };
