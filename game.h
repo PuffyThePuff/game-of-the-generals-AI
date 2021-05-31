@@ -27,6 +27,7 @@ private:
     void sendToGraveyard(Piece*);
     void blackMove();
     void checkFlags();
+    void placer(int[]);
 private:
     sf::RenderWindow mWindow;
     std::vector<sf::RectangleShape*> grid;
