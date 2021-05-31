@@ -54,7 +54,10 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 						G->add(current, next, possibleMoves[j]);
 					}
 
-					else if (toMove->team != next->boardState[row - 1][col].piece->team) {
+					else if (
+						next->boardState[row - 1][col].piece != NULL &&
+						toMove->team != next->boardState[row - 1][col].piece->team
+					) {
 						next->boardState[row][col].isOccupied = false;
 						next->boardState[row][col].piece = NULL;
 						next->boardState[row - 1][col].challengers[0] = toMove;
@@ -78,7 +81,10 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 						G->add(current, next, possibleMoves[j]);
 					}
 
-					else if (toMove->team != next->boardState[row][col + 1].piece->team) {
+					else if (
+						next->boardState[row][col + 1].piece != NULL &&
+						toMove->team != next->boardState[row][col + 1].piece->team
+					) {
 						next->boardState[row][col].isOccupied = false;
 						next->boardState[row][col].piece = NULL;
 						next->boardState[row][col + 1].challengers[0] = toMove;
@@ -102,7 +108,10 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 						G->add(current, next, possibleMoves[j]);
 					}
 
-					else if (toMove->team != next->boardState[row + 1][col].piece->team) {
+					else if (
+						next->boardState[row + 1][col].piece != NULL &&
+						toMove->team != next->boardState[row + 1][col].piece->team
+					) {
 						next->boardState[row][col].isOccupied = false;
 						next->boardState[row][col].piece = NULL;
 						next->boardState[row + 1][col].challengers[0] = toMove;
@@ -126,7 +135,10 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 						G->add(current, next, possibleMoves[j]);
 					}
 
-					else if (toMove->team != next->boardState[row][col - 1].piece->team) {
+					else if (
+						next->boardState[row][col - 1].piece != NULL &&
+						toMove->team != next->boardState[row][col - 1].piece->team
+					) {
 						next->boardState[row][col].isOccupied = false;
 						next->boardState[row][col].piece = NULL;
 						next->boardState[row][col - 1].challengers[0] = toMove;
@@ -185,6 +197,7 @@ float Agent::getOffensiveScore(State* state) {
 				if (
 					i > 0 &&
 					state->boardState[i - 1][j].isOccupied &&
+					state->boardState[i - 1][j].piece != NULL &&
 					(state->boardState[i - 1][j].piece->team != state->boardState[i][j].piece->team)
 				) {
 					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
@@ -194,6 +207,7 @@ float Agent::getOffensiveScore(State* state) {
 				if (
 					i < 7 &&
 					state->boardState[i + 1][j].isOccupied &&
+					state->boardState[i + 1][j].piece != NULL &&
 					(state->boardState[i + 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
 					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
@@ -203,6 +217,7 @@ float Agent::getOffensiveScore(State* state) {
 				if (
 					j > 0 &&
 					state->boardState[i][j - 1].isOccupied &&
+					state->boardState[i][j - 1].piece != NULL &&
 					(state->boardState[i][j - 1].piece->team != state->boardState[i][j].piece->team)
 					) {
 					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
@@ -212,6 +227,7 @@ float Agent::getOffensiveScore(State* state) {
 				if (
 					j < 8 &&
 					state->boardState[i][j + 1].isOccupied &&
+					state->boardState[i][j + 1].piece != NULL &&
 					(state->boardState[i][j + 1].piece->team != state->boardState[i][j].piece->team)
 					) {
 					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
@@ -270,6 +286,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 					if (
 						i > 0 &&
 						state->boardState[i - 1][j].isOccupied &&
+						state->boardState[i - 1][j].piece != NULL &&
 						(state->boardState[i - 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
 						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
@@ -279,6 +296,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 					if (
 						i < 7 &&
 						state->boardState[i + 1][j].isOccupied &&
+						state->boardState[i + 1][j].piece != NULL &&
 						(state->boardState[i + 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
 						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
@@ -288,6 +306,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 					if (
 						j > 0 &&
 						state->boardState[i][j - 1].isOccupied &&
+						state->boardState[i][j - 1].piece != NULL &&
 						(state->boardState[i][j - 1].piece->team != state->boardState[i][j].piece->team)
 					) {
 						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
@@ -297,6 +316,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 					if (
 						j < 8 &&
 						state->boardState[i][j + 1].isOccupied &&
+						state->boardState[i][j + 1].piece != NULL &&
 						(state->boardState[i][j + 1].piece->team != state->boardState[i][j].piece->team)
 					) {
 						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
@@ -366,6 +386,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 		if (
 			row > 0 &&
 			state->boardState[row - 1][col].isOccupied &&
+			state->boardState[row - 1][col].piece != NULL &&
 			(state->boardState[row - 1][col].piece->team != flag->team)
 		) {
 			return false;
@@ -375,6 +396,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 		if (
 			row < 7 &&
 			state->boardState[row + 1][col].isOccupied &&
+			state->boardState[row + 1][col].piece != NULL &&
 			(state->boardState[row + 1][col].piece->team != flag->team)
 		) {
 			return false;
@@ -384,6 +406,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 		if (
 			col > 0 &&
 			state->boardState[row][col - 1].isOccupied &&
+			state->boardState[row][col - 1].piece != NULL &&
 			(state->boardState[row][col - 1].piece->team != flag->team)
 		) {
 			return false;
@@ -393,6 +416,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 		if (
 			col < 8 &&
 			state->boardState[row][col + 1].isOccupied &&
+			state->boardState[row][col + 1].piece != NULL &&
 			(state->boardState[row][col + 1].piece->team != flag->team)
 		) {
 			return false;
