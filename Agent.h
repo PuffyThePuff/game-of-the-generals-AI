@@ -3,6 +3,7 @@
 #include"Graph.h"
 #include"Piece.h"
 #include<algorithm>
+#include<random>
 #include<vector>
 #pragma once
 

@@ -1,5 +1,4 @@
 #include "Agent.h"
-#include<iostream>
 
 Agent::Agent() {
 	G = new Graph();
@@ -387,18 +386,39 @@ Move* Agent::getNextMove(State* current, vector<Piece*> whitePieces, vector<Piec
 	generateNext(current, blackPieces);
 	ChildList* list = G->getConnections(current);
 	Move* move = NULL;
-	float bestScore = INFINITY;
+	float bestScore = -INFINITY;
+	std::shuffle(possibleMoves.begin(), possibleMoves.end(), std::default_random_engine());
 	int stateCount = 0;
 
 	for (unsigned int i = 0; i < possibleMoves.size(); i++) {
 		State* check = list->at(possibleMoves[i]);
 		if (check != NULL) {
 			float score = getBlackScore(check, blackPieces[0]);
-			if (score < bestScore) {
+			generateNext(check, whitePieces);
+			ChildList* list2 = G->getConnections(check);
+			float counterScore = 0.f;
+			int counterCount = 0;
+			for (int j = possibleMoves.size() - 1; j >= 0; j--) {
+				State* check2 = list2->at(possibleMoves[j]);
+				if (check2 != NULL) {
+					counterScore += getWhiteScore(check2);
+					counterCount++;
+				}
+
+				if (counterCount >= SAMPLE_SIZE) break;
+			}
+
+			G->adjList[check]->clear();
+			score -= float(counterScore / counterCount);
+			if (score > bestScore) {
 				bestScore = score;
 				move = possibleMoves[i];
 			}
+
+			stateCount++;
 		}
+
+		if (stateCount >= SAMPLE_SIZE) break;
 	}
 	
 	G->adjList[current]->clear();
