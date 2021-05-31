@@ -302,21 +302,35 @@ void Game::handlePlayerInput(sf::Keyboard::Key key) {
 }
 
 void Game::setBlack() {
-    int k = blackPieces.size() - 1;
-    for (int i = 0; i < 9; i++) {
-        for(int j = 0; j < 2; j++){
-            blackPieces[k]->place(j, i);
-            board[j][i].isOccupied = true;
-            board[j][i].piece = blackPieces[k];
-            k--;
-        }
+    int placement = rand() % 2;
+
+    //evens are row, odds are cols in coords[]
+    //nate's basic placement
+    if (placement == 0) {
+        int coords[42] = { 0, 4, 1, 0, 1, 2, 1, 3, 1, 5, 1, 6, 1, 8, 0, 7, 0, 1, 0, 2, 0, 6, 2, 1, 2, 7, 2, 4, 0, 8, 0, 0, 1, 1, 1, 7, 1, 4, 0, 3, 0, 5 };
+        placer(coords);
     }
-    
-    for(int i = 0; i < 3; i++){
-        blackPieces[k]->place(2, i);
-        board[2][i].isOccupied = true;
-        board[2][i].piece = blackPieces[k];
-        k--;
+    //aggro
+    else if (placement == 1) {
+        int coords[42] = { 0, 7, 0, 0, 0, 5, 1, 1, 1, 7, 2, 2, 2, 8, 2, 3, 1, 4, 1, 0, 1, 6, 0, 4, 1, 8, 1, 3, 1, 5, 1, 2, 0, 6, 2, 6, 2, 4, 2, 1, 2, 7 };
+        placer(coords);
+    }
+    //decoy
+    else if (placement == 2) {
+        int coords[42] = { 1, 0, 0, 1, 2, 0, 0, 3, 1, 4, 1, 7, 2, 8, 2, 5, 2, 6, 2, 1, 0, 8, 1, 2, 1, 8, 0, 2, 0, 7, 1, 5, 1, 6, 1, 3, 2, 4, 1, 1, 2, 7 };
+        placer(coords);
+    }
+
+}
+
+void Game::placer(int coords[]) {
+    int row, col;
+    for (int i = 0; i < blackPieces.size(); i++) {
+        row = coords[i * 2];
+        col = coords[(i * 2) + 1];
+        blackPieces[i]->place(row, col);
+        board[row][col].isOccupied = true;
+        board[row][col].piece = blackPieces[i];
     }
 }
 
