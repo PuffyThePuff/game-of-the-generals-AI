@@ -183,6 +183,7 @@ float Agent::getOffensiveScore(State* state) {
 
 				// Check space above.
 				if (
+					i > 0 &&
 					state->boardState[i - 1][j].isOccupied &&
 					(state->boardState[i - 1][j].piece->team != state->boardState[i][j].piece->team)
 				) {
@@ -191,6 +192,7 @@ float Agent::getOffensiveScore(State* state) {
 
 				// Check space below.
 				if (
+					i < 7 &&
 					state->boardState[i + 1][j].isOccupied &&
 					(state->boardState[i + 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
@@ -199,6 +201,7 @@ float Agent::getOffensiveScore(State* state) {
 
 				// Check space to the left.
 				if (
+					j > 0 &&
 					state->boardState[i][j - 1].isOccupied &&
 					(state->boardState[i][j - 1].piece->team != state->boardState[i][j].piece->team)
 					) {
@@ -207,6 +210,7 @@ float Agent::getOffensiveScore(State* state) {
 
 				// Check space to the right.
 				if (
+					j < 8 &&
 					state->boardState[i][j + 1].isOccupied &&
 					(state->boardState[i][j + 1].piece->team != state->boardState[i][j].piece->team)
 					) {
@@ -264,6 +268,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 
 					// Check space above.
 					if (
+						i > 0 &&
 						state->boardState[i - 1][j].isOccupied &&
 						(state->boardState[i - 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
@@ -272,6 +277,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 
 					// Check space below.
 					if (
+						i < 7 &&
 						state->boardState[i + 1][j].isOccupied &&
 						(state->boardState[i + 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
@@ -280,6 +286,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 
 					// Check space to the left.
 					if (
+						j > 0 &&
 						state->boardState[i][j - 1].isOccupied &&
 						(state->boardState[i][j - 1].piece->team != state->boardState[i][j].piece->team)
 					) {
@@ -288,6 +295,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 
 					// Check space to the right.
 					if (
+						j < 8 &&
 						state->boardState[i][j + 1].isOccupied &&
 						(state->boardState[i][j + 1].piece->team != state->boardState[i][j].piece->team)
 					) {
@@ -324,22 +332,22 @@ float Agent::getOpennessScore(State* state, bool isWhite) {
 				state->boardState[i][j].piece->team == isWhite
 			) {
 				// Check space above.
-				if (!state->boardState[i - 1][j].isOccupied) {
+				if (i > 0 && !state->boardState[i - 1][j].isOccupied) {
 					score += 1.f;
 				}
 
 				// Check space below.
-				if (!state->boardState[i + 1][j].isOccupied) {
+				if (i < 7 && !state->boardState[i + 1][j].isOccupied) {
 					score += 1.f;
 				}
 
 				// Check space to the left.
-				if (!state->boardState[i][j - 1].isOccupied) {
+				if (j > 0 && !state->boardState[i][j - 1].isOccupied) {
 					score += 1.f;
 				}
 
 				// Check space to the right.
-				if (!state->boardState[i][j + 1].isOccupied) {
+				if (j < 8 && !state->boardState[i][j + 1].isOccupied) {
 					score += 1.f;
 				}
 			}
@@ -356,6 +364,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 	if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece != NULL) {
 		// Check space above.
 		if (
+			row > 0 &&
 			state->boardState[row - 1][col].isOccupied &&
 			(state->boardState[row - 1][col].piece->team != flag->team)
 		) {
@@ -364,6 +373,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 
 		// Check space below.
 		if (
+			row < 7 &&
 			state->boardState[row + 1][col].isOccupied &&
 			(state->boardState[row + 1][col].piece->team != flag->team)
 		) {
@@ -372,6 +382,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 
 		// Check space to the left.
 		if (
+			col > 0 &&
 			state->boardState[row][col - 1].isOccupied &&
 			(state->boardState[row][col - 1].piece->team != flag->team)
 		) {
@@ -380,6 +391,7 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 
 		// Check space to the right.
 		if (
+			col < 8 &&
 			state->boardState[row][col + 1].isOccupied &&
 			(state->boardState[row][col + 1].piece->team != flag->team)
 		) {
