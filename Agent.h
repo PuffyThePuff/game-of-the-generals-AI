@@ -18,12 +18,14 @@ private:
 	vector<Move*> possibleMoves;
 	const float POINTS_PER_PIECE = 10.f;
 	const float FLAG_PENALTY = -10000.f;
+	const int SAMPLE_SIZE = 15;
 
 	void generateNext(State*, vector<Piece*>);
-	float getScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces);
-	float getOffensiveScore(Move* move, State* state, vector<Piece*> ownPieces);
-	float getDefensiveScore(Move* move, State* state, vector<Piece*> ownPieces, vector<Piece*> enemyPieces);
-	float getOpennessScore(State* state, vector<Piece*> ownPieces);
+	float getBlackScore(State* state, Piece* flag);
+	float getWhiteScore(State* state);
+	float getOffensiveScore(State* state);
+	float getDefensiveScore(State* state, bool isWhite);
+	float getOpennessScore(State* state, bool isWhite);
 	bool flagIsSafe(State* state, Piece* flag);
 	float getWinProbability(int rank);
 	float getElimProbability(int rank);
