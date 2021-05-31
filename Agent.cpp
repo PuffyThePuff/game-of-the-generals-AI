@@ -159,12 +159,18 @@ void Agent::generateNext(State* current, vector<Piece*> pieceList) {
 	}
 }
 
-float Agent::getBlackScore(State* state, Piece* flag) {
+float Agent::getBlackScore(State* state, Piece* flag, Move* move) {
 	float score = 0.f;
 	score += getOffensiveScore(state);
 	score += getDefensiveScore(state, false);
 	score += getOpennessScore(state, false);
-	if (!flagIsSafe(state, flag)) score += FLAG_PENALTY;
+	
+	if (move->pieceIndex == 0) {
+		if(!flagIsSafe(state, flag, move->moveType)) score += FLAG_PENALTY;
+	}
+	else {
+		if (!flagIsSafe(state, flag)) score += FLAG_PENALTY;
+	}
 	return score;
 }
 
@@ -423,6 +429,78 @@ bool Agent::flagIsSafe(State* state, Piece* flag) {
 		}
 	}
 
+	else if (
+		state->boardState[row][col].piece == NULL &&
+		state->boardState[row][col].challengers[0] != NULL &&
+		state->boardState[row][col].challengers[1] != NULL
+	) {
+		return false;
+	}
+
+	return true;
+}
+
+bool Agent::flagIsSafe(State* state, Piece* flag, Piece::MoveType move) {
+	int row = flag->currentRow;
+	int col = flag->currentCol;
+
+	switch (move) {
+	case Piece::Up: row -= 1; break;
+	case Piece::Right: col += 1; break;
+	case Piece::Down: row += 1; break;
+	case Piece::Left: col -= 1; break;
+	}
+
+	if (state->boardState[row][col].isOccupied && state->boardState[row][col].piece != NULL) {
+		// Check space above.
+		if (
+			row > 0 &&
+			state->boardState[row - 1][col].isOccupied &&
+			state->boardState[row - 1][col].piece != NULL &&
+			(state->boardState[row - 1][col].piece->team != flag->team)
+			) {
+			return false;
+		}
+
+		// Check space below.
+		if (
+			row < 7 &&
+			state->boardState[row + 1][col].isOccupied &&
+			state->boardState[row + 1][col].piece != NULL &&
+			(state->boardState[row + 1][col].piece->team != flag->team)
+			) {
+			return false;
+		}
+
+		// Check space to the left.
+		if (
+			col > 0 &&
+			state->boardState[row][col - 1].isOccupied &&
+			state->boardState[row][col - 1].piece != NULL &&
+			(state->boardState[row][col - 1].piece->team != flag->team)
+			) {
+			return false;
+		}
+
+		// Check space to the right.
+		if (
+			col < 8 &&
+			state->boardState[row][col + 1].isOccupied &&
+			state->boardState[row][col + 1].piece != NULL &&
+			(state->boardState[row][col + 1].piece->team != flag->team)
+			) {
+			return false;
+		}
+	}
+
+	else if (
+		state->boardState[row][col].piece == NULL &&
+		state->boardState[row][col].challengers[0] != NULL &&
+		state->boardState[row][col].challengers[1] != NULL
+	) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -455,7 +533,7 @@ Move* Agent::getNextMove(State* current, vector<Piece*> whitePieces, vector<Piec
 	for (unsigned int i = 0; i < possibleMoves.size(); i++) {
 		State* check = list->at(possibleMoves[i]);
 		if (check != NULL) {
-			float score = getBlackScore(check, blackPieces[0]);
+			float score = getBlackScore(check, blackPieces[0], possibleMoves[i]);
 			generateNext(check, whitePieces);
 			ChildList* list2 = G->getConnections(check);
 			float counterScore = 0.f;
