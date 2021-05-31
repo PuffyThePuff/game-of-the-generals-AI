@@ -178,6 +178,15 @@ void Game::processEvents(sf::Time deltaTime) {
         startMenu = false;
     }
 
+    else if (quitMenu) {
+        if (sf::Event::KeyReleased && event.key.code == sf::Keyboard::Enter) {
+            mWindow.close();
+        }
+        else if (sf::Event::KeyReleased && event.key.code == sf::Keyboard::BackSpace) {
+            quitMenu = false;
+        }
+    }
+
     else if (event.type == event.MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && !startMenu) {
         if(startPhase){
             sf::Vector2i mousePos = sf::Mouse::getPosition(mWindow);
@@ -231,6 +240,10 @@ void Game::processEvents(sf::Time deltaTime) {
                 }
             }
         }
+    }
+
+    else if (!quitMenu && sf::Event::KeyReleased && event.key.code == sf::Keyboard::Escape) {
+        quitMenu = true;
     }
 }
 
