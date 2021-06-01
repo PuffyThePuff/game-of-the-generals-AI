@@ -250,20 +250,27 @@ void Game::processEvents(sf::Time deltaTime) {
         win = false;
         lose = false;
         startMenu = false;
-        selectedIndex = 0;
         startPhase = true;
-        whitePieces[0]->sprite->setPosition(10 * TILE_SIZE, 210);
-        whitePieces[0]->isAlive = true;
-        for (int i = 1; i < whitePieces.size(); i++) {
+
+        for (int i = 0; i < whiteGraveyard.size(); i++) {
+            whiteGraveyard[i]->isAlive = true;
+        }
+        whiteGraveyard.clear();
+        
+        for (int i = 0; i < whitePieces.size(); i++) {
             sendToGraveyard(whitePieces[i]);
             whitePieces[i]->sprite->setPosition(660, 480);
-            whitePieces[i]->isAlive = true;
         }
+
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 9; j++) {
                 board[i][j].isOccupied = false;
+                board[i][j].piece = NULL;
             }
         }
+
+        whitePieces[0]->sprite->setPosition(10 * TILE_SIZE, 210);
+        selectedIndex = 0;
         setBlack();
         isPlayerTurn = true;
     }
