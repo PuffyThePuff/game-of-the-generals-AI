@@ -246,7 +246,7 @@ void Game::processEvents(sf::Time deltaTime) {
         quitMenu = true;
     }
 
-    else if ((win || lose) && sf::Event::KeyReleased) {
+    else if ((win || lose) && sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space) {
         win = false;
         lose = false;
         startMenu = false;
@@ -605,9 +605,9 @@ void Game::render() {
     for (int i = 0; i < blackGraveyard.size(); i++) {
         mWindow.draw(*blackGraveyard[i]->sprite);
     }
-
-    if (quitMenu) mWindow.draw(quitBox);
+    
     if (startMenu) mWindow.draw(titleScreen);
     if (win || lose) mWindow.draw(resultScreen);
+    if (quitMenu) mWindow.draw(quitBox);
     mWindow.display();
 }
