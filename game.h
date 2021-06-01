@@ -10,6 +10,7 @@ using namespace std;
 class Game {
 public:
     Game();
+    ~Game();
     void run();
 
     static const int TILE_SIZE = 60;

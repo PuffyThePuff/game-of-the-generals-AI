@@ -19,7 +19,7 @@ private:
 	vector<Move*> possibleMoves;
 	const float POINTS_PER_PIECE = 10.f;
 	const float FLAG_PENALTY = -10000.f;
-	const int SAMPLE_SIZE = 15;
+	const int SAMPLE_SIZE = 20;
 
 	void generateNext(State*, vector<Piece*>);
 	float getBlackScore(State* state, Piece* flag, Move* move);

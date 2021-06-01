@@ -144,6 +144,27 @@ Game::Game() :
     quitBox.setTexture(*mTexture);
 };
 
+Game::~Game() {
+    whiteGraveyard.clear();
+    blackGraveyard.clear();
+
+    int size = whitePieces.size();
+    for (int i = 0; i < size; i++) {
+        Piece* ptr = whitePieces[i];
+        whitePieces[i] = NULL;
+        delete ptr;
+    }
+    whitePieces.clear();
+    
+    size = blackPieces.size();
+    for (int i = 0; i < size; i++) {
+        Piece* ptr = blackPieces[i];
+        blackPieces[i] = NULL;
+        delete ptr;
+    }
+    blackPieces.clear();
+}
+
 void Game::run() {
     sf::Clock clock;
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -271,6 +292,7 @@ void Game::processEvents(sf::Time deltaTime) {
 
         whitePieces[0]->sprite->setPosition(10 * TILE_SIZE, 210);
         selectedIndex = 0;
+        blackGraveyard.clear();
         setBlack();
         isPlayerTurn = true;
     }
@@ -332,18 +354,22 @@ void Game::handlePlayerInput(sf::Keyboard::Key key) {
 void Game::setBlack() {
     int placement = rand() % 3;
 
-    //evens are row, odds are cols in coords[]
-    //nate's basic placement
+    for (int i = 0; i < blackPieces.size(); i++) {
+        blackPieces[i]->isAlive = true;
+    }
+
+    // evens are row, odds are cols in coords[]
+    // nate's basic placement
     if (placement == 0) {
         int coords[42] = { 0, 4, 1, 0, 1, 2, 1, 3, 1, 5, 1, 6, 1, 8, 0, 7, 0, 1, 0, 2, 0, 6, 2, 1, 2, 7, 2, 4, 0, 8, 0, 0, 1, 1, 1, 7, 1, 4, 0, 3, 0, 5 };
         placer(coords);
     }
-    //aggro
+    // aggro
     else if (placement == 1) {
         int coords[42] = { 0, 7, 0, 0, 0, 5, 1, 1, 1, 7, 2, 2, 2, 8, 2, 3, 1, 4, 1, 0, 1, 6, 0, 4, 1, 8, 1, 3, 1, 5, 1, 2, 0, 6, 2, 6, 2, 4, 2, 1, 2, 7 };
         placer(coords);
     }
-    //decoy
+    // decoy
     else if (placement == 2) {
         int coords[42] = { 1, 0, 0, 1, 2, 0, 0, 3, 1, 4, 1, 7, 2, 8, 2, 5, 2, 6, 2, 1, 0, 8, 1, 2, 1, 8, 0, 2, 0, 7, 1, 5, 1, 6, 1, 3, 2, 4, 1, 1, 2, 7 };
         placer(coords);
@@ -559,6 +585,7 @@ void Game::blackMove(){
     copy(&board[0][0], &board[0][0] + 8 * 9, &current->boardState[0][0]);
     Move* move = agent.getNextMove(current, whitePieces, blackPieces);
     movePiece(blackPieces[move->pieceIndex], move->moveType);
+    delete current;
 }
 
 //check flag conditions here for game win or lose
