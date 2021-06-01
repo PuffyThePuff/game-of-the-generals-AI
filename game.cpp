@@ -293,9 +293,8 @@ void Game::handlePlayerInput(sf::Keyboard::Key key) {
         }
     }
 
-    if (key == sf::Keyboard::Backspace) {
-        if (!quitMenu) quitMenu = true;
-        else mWindow.close();
+    if (key == sf::Keyboard::Backspace && quitMenu) {
+        mWindow.close();
     }
 
     else quitMenu = false;
