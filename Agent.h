@@ -22,12 +22,13 @@ private:
 	const int SAMPLE_SIZE = 15;
 
 	void generateNext(State*, vector<Piece*>);
-	float getBlackScore(State* state, Piece* flag);
+	float getBlackScore(State* state, Piece* flag, Move* move);
 	float getWhiteScore(State* state);
 	float getOffensiveScore(State* state);
 	float getDefensiveScore(State* state, bool isWhite);
 	float getOpennessScore(State* state, bool isWhite);
 	bool flagIsSafe(State* state, Piece* flag);
+	bool flagIsSafe(State* state, Piece* flag, Piece::MoveType direction);
 	float getWinProbability(int rank);
 	float getElimProbability(int rank);
 };

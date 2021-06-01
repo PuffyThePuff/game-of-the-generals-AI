@@ -268,28 +268,28 @@ void Game::handlePlayerInput(sf::Keyboard::Key key) {
             movePiece(selected, Piece::Up);
             selected->deselect();
             selectedMode = false;
-            blackMove();
+            if(!isPlayerTurn) blackMove();
         }
 
         if (key == sf::Keyboard::S && selected->currentRow <= 7){
             movePiece(selected, Piece::Down);
             selected->deselect();
             selectedMode = false;
-            blackMove();
+            if (!isPlayerTurn) blackMove();
         }
 
         if (key == sf::Keyboard::A && selected->currentCol > 0){
             movePiece(selected, Piece::Left);
             selected->deselect();
             selectedMode = false;
-            blackMove();
+            if (!isPlayerTurn) blackMove();
         }
 
         if (key == sf::Keyboard::D && selected->currentCol <= 7){
             movePiece(selected, Piece::Right);
             selected->deselect();
             selectedMode = false;
-            blackMove();
+            if (!isPlayerTurn) blackMove();
         }
     }
 
