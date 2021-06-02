@@ -17,7 +17,9 @@ public:
 private:
 	Graph* G;
 	vector<Move*> possibleMoves;
-	const float POINTS_PER_PIECE = 10.f;
+	const float OFFENSE_POINTS_PER_PIECE = 15.f;
+	const float DEFENSE_POINTS_PER_PIECE = 10.f;
+	const float FLAG_BUFF = 100.f;
 	const float FLAG_PENALTY = -10000.f;
 	const int SAMPLE_SIZE = 20;
 

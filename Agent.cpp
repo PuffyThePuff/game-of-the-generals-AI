@@ -194,7 +194,12 @@ float Agent::getOffensiveScore(State* state) {
 				!state->boardState[i][j].piece->team
 			) {
 				// Add points per piece left based on their probability of winning a matchup.
-				score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
+				score += OFFENSE_POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
+
+				// Add points based on how close the flag is to the end.
+				if (state->boardState[i][j].piece->rank == 0) {
+					score += FLAG_BUFF * i;
+				}
 
 				// Check adjacent spaces for enemies, and add points based on probability of winning
 				// a potential challenge.
@@ -206,7 +211,7 @@ float Agent::getOffensiveScore(State* state) {
 					state->boardState[i - 1][j].piece != NULL &&
 					(state->boardState[i - 1][j].piece->team != state->boardState[i][j].piece->team)
 				) {
-					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
+					score += OFFENSE_POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
 				}
 
 				// Check space below.
@@ -216,7 +221,7 @@ float Agent::getOffensiveScore(State* state) {
 					state->boardState[i + 1][j].piece != NULL &&
 					(state->boardState[i + 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
-					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
+					score += OFFENSE_POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
 				}
 
 				// Check space to the left.
@@ -226,7 +231,7 @@ float Agent::getOffensiveScore(State* state) {
 					state->boardState[i][j - 1].piece != NULL &&
 					(state->boardState[i][j - 1].piece->team != state->boardState[i][j].piece->team)
 					) {
-					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
+					score += OFFENSE_POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
 				}
 
 				// Check space to the right.
@@ -236,7 +241,7 @@ float Agent::getOffensiveScore(State* state) {
 					state->boardState[i][j + 1].piece != NULL &&
 					(state->boardState[i][j + 1].piece->team != state->boardState[i][j].piece->team)
 					) {
-					score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
+					score += OFFENSE_POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].piece->rank);
 				}
 			}
 
@@ -248,7 +253,7 @@ float Agent::getOffensiveScore(State* state) {
 				state->boardState[i][j].challengers[0] != NULL &&
 				state->boardState[i][j].challengers[1] != NULL
 			) {
-				score += POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].challengers[0]->rank);
+				score += OFFENSE_POINTS_PER_PIECE * getWinProbability(state->boardState[i][j].challengers[0]->rank);
 			}
 		}
 	}
@@ -269,7 +274,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 				state->boardState[i][j].piece->team != isWhite
 			) {
 				// Deduct points per piece left based on average probability of winning a matchup.
-				score -= POINTS_PER_PIECE * 0.424;
+				score -= DEFENSE_POINTS_PER_PIECE * 0.424;
 			}
 
 			// Only perform if evaluating the agent's score.
@@ -283,7 +288,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 				) {
 					// Deduct points per piece left based on their probability of
 					// getting eliminated in a matchup.
-					score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
+					score -= DEFENSE_POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
 
 					// Check adjacent spaces for enemies, and deduct points based on probability of
 					// getting eliminated in a potential challenge.
@@ -295,7 +300,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 						state->boardState[i - 1][j].piece != NULL &&
 						(state->boardState[i - 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
-						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
+						score -= DEFENSE_POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
 					}
 
 					// Check space below.
@@ -305,7 +310,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 						state->boardState[i + 1][j].piece != NULL &&
 						(state->boardState[i + 1][j].piece->team != state->boardState[i][j].piece->team)
 					) {
-						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
+						score -= DEFENSE_POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
 					}
 
 					// Check space to the left.
@@ -315,7 +320,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 						state->boardState[i][j - 1].piece != NULL &&
 						(state->boardState[i][j - 1].piece->team != state->boardState[i][j].piece->team)
 					) {
-						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
+						score -= DEFENSE_POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
 					}
 
 					// Check space to the right.
@@ -325,7 +330,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 						state->boardState[i][j + 1].piece != NULL &&
 						(state->boardState[i][j + 1].piece->team != state->boardState[i][j].piece->team)
 					) {
-						score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
+						score -= DEFENSE_POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].piece->rank);
 					}
 				}
 
@@ -337,7 +342,7 @@ float Agent::getDefensiveScore(State* state, bool isWhite) {
 					state->boardState[i][j].challengers[0] != NULL &&
 					state->boardState[i][j].challengers[1] != NULL
 					) {
-					score -= POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].challengers[0]->rank);
+					score -= DEFENSE_POINTS_PER_PIECE * getElimProbability(state->boardState[i][j].challengers[0]->rank);
 				}
 			}
 		}
