@@ -27,6 +27,11 @@ Agent::Agent() {
 }
 
 Agent::~Agent() {
+	for (int i = 0; i < possibleMoves.size(); i++) {
+		Move* move = possibleMoves[i];
+		possibleMoves[i] = NULL;
+		delete move;
+	}
 	possibleMoves.clear();
 	G->adjList.clear();
 }
@@ -553,6 +558,11 @@ Move* Agent::getNextMove(State* current, vector<Piece*> whitePieces, vector<Piec
 				if (counterCount >= SAMPLE_SIZE) break;
 			}
 
+			for (int i = 0; i < possibleMoves.size(); i++) {
+				State* state = list2->at(possibleMoves[i]);
+				delete state;
+			}
+
 			G->adjList[check]->clear();
 			score -= float(counterScore / counterCount);
 			if (score > bestScore) {
@@ -564,6 +574,11 @@ Move* Agent::getNextMove(State* current, vector<Piece*> whitePieces, vector<Piec
 		}
 
 		if (stateCount >= SAMPLE_SIZE) break;
+	}
+
+	for (int i = 0; i < possibleMoves.size(); i++) {
+		State* state = list->at(possibleMoves[i]);
+		delete state;
 	}
 	
 	G->adjList[current]->clear();
