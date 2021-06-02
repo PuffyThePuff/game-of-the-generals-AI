@@ -597,7 +597,7 @@ void Game::update(sf::Time deltaTime) {
                 win = true;
                 resultScreen.setTexture(*(TextureManager::getInstance()->getTexture("win")));
             }
-            else if (blackPieces[0]->currentRow == 8) {
+            if (blackPieces[0]->currentRow == 7) {
                 lose = true;
                 resultScreen.setTexture(*(TextureManager::getInstance()->getTexture("loss")));
             }
