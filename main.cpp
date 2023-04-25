@@ -4,9 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include "game.h"
 
-int main() {
 
+int main() {
+	srand(time(0));
 	Game game;
 	game.run();
-
 }
